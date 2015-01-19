@@ -1,0 +1,12 @@
+#
+# vaporware9000processor.bsdl
+# by Evan Foss
+# date 2015.01.19
+# The point of this is to have a bsdl project which has known 
+# properties for testing the libbsdl library. I can not use 
+# any of the bsdl files from known manufactures because of 
+# their rules about intellectual property and the projects 
+# license. 
+#
+
+
