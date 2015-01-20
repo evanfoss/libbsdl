@@ -8,19 +8,21 @@ SRC_FILES = \
 	libbsdl.c \
 	libbsdl.h
 
-SRC_FILES_TEST = 
-	main.c \
+SRC_FILES_TEST = main.c 
 
 all: libbsdl test
 
 
 libbsdl:
-	echo 'building libbsdl'
+	echo 'building lib bsdl'
 	cd src
-	$(CC) -c SRC_FILES -o ../libbsdl.o
-	ar rcs libbsdl.a libbsdl.o
+	$(CC) -fPIC -c SRC_FILES -o ../libbsdl.o
+	$(CC) -g -shared  -Wl, -soname, libbsdl.so -o libbsdl.so libbsdl.o -lc
 
 test:
+	echo 'testing lib bsdl'
 	cd test
-	echo 'testing libbsdl'
-	$(CC) -I SRC_FILES_TEST ../libbsdl.so ../
+	$(CC) -g -Wall SRC_FILES_TEST ../ -l ../src
+
+
+
