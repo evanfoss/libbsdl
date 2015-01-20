@@ -15,13 +15,11 @@ all: libbsdl test
 
 libbsdl:
 	echo 'building lib bsdl'
-	cd src
 	$(CC) -fPIC -c SRC_FILES -o ../libbsdl.o
 	$(CC) -g -shared  -Wl, -soname, libbsdl.so -o libbsdl.so libbsdl.o -lc
 
 test:
 	echo 'testing lib bsdl'
-	cd test
 	$(CC) -g -Wall SRC_FILES_TEST ../ -l ../src
 
 
