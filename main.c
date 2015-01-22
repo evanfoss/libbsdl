@@ -44,5 +44,5 @@ int main(void)
 //	puts(*bsdl_file_content);
 
 	close(bsdl_file);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
