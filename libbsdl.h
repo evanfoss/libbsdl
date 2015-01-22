@@ -13,7 +13,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
+/*
+ * libbsdl commands
+ * 	full text
+ * 	warnnings
+ * 	integrity check
+ * 	device package
+ * 	device pin count
+ * 	full device id
+ * 	device id
+ * 	device version
+ * 	device manufacture
+ * 	(more to add later)
+ *
+ */
+void libbsdl(char *bsdl_in, char *output, char *command);
 
 #endif
 

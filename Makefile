@@ -15,12 +15,17 @@ all: libbsdl test
 
 libbsdl:
 	echo 'building lib bsdl'
-	$(CC) -fPIC -c SRC_FILES -o ../libbsdl.o
+	$(CC) -fPIC -c $(SRC_FILES) -o libbsdl.o
 	$(CC) -g -shared  -Wl, -soname, libbsdl.so -o libbsdl.so libbsdl.o -lc
 
 test:
+	clear
 	echo 'testing lib bsdl'
-	$(CC) -g -Wall SRC_FILES_TEST ../ -l ../src
+	$(CC) $(SRC_FILES_TEST) $(SRC_FILES) -o test.bin
+	./test.bin
+
+clean:
+	rm test.bin
 
 fetchbsdl: #This does not quite work yet but I will lick it later. The point is just to have the files now for unit testing
 	cd test

@@ -38,7 +38,7 @@ int main(void)
 		puts("Beginning actual testing bsdl file opened\n");
 
 	//I will change the shape of the libaries interface later.
-	puts(libbsdl *bsdl_file_content);
+//	libbsdl(*bsdl_file_content);
 	puts("\n");
 
 //	puts(*bsdl_file_content);
