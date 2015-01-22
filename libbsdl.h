@@ -6,12 +6,12 @@
  */
 
 #ifndef LIBBSDL_H_
+#define LIBBSDL_H_
 
-#include<errno.h>
-#include<stdarg.h>
-#include<stdlib.h>
-#include<stdio.h>
-#include"libbsdl.h"
+#include <errno.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 
 
