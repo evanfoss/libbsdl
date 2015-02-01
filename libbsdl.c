@@ -48,6 +48,10 @@ extern void libbsdl_initial_comments(FILE *file)
 			{
 				printf("%s", line);
 			}
+			else if (line[location] =! ' ')
+			{
+				location == read;
+			}
 		}
 //		printf("Retrieved line of length %zu :\n", read);
 //		printf("counted to %zu", location);
