@@ -23,8 +23,10 @@ test:
 	echo 'testing lib bsdl'
 	$(CC) $(SRC_FILES_TEST) $(SRC_FILES) -o test.bin
 	./test.bin
+	rm test.bin
 
 clean:
+	echo 'clean up.'
 	rm test.bin
 
 fetchbsdl: #This does not quite work yet but I will lick it later. The point is just to have the files now for unit testing

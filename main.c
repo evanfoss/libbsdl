@@ -16,33 +16,39 @@
 
 int main(void)
 {
-	puts("Does the stdio work to talk to the display? (Basic sanity check) : YES\n");
-
-	
-	int bsdl_file;
-	char *bsdl_file_content;
+	// open an example file
+	FILE *bsdl_file;
 	char bsdl_file_name[] = "vaporware9000processor.bsdl";
 	struct stat file_status_buffer;
-	if((bsdl_file = open(bsdl_file_name, O_RDONLY)) < 0)
+	bsdl_file = fopen(bsdl_file_name, "r");
+	if (bsdl_file == NULL)
 	{
 		perror("open example bsdl file failed");
 		exit(EXIT_FAILURE);
 	}
-	fstat(bsdl_file, &file_status_buffer);
-	if((bsdl_file_content = mmap(0, file_status_buffer.st_size, PROT_READ, MAP_SHARED, bsdl_file, 0)) == MAP_FAILED)
-	{     
-		perror("memory mapping of bsdl file failed");
-		exit(EXIT_FAILURE);
-	}
-	else
-		puts("Beginning actual testing bsdl file opened\n");
 
-	//I will change the shape of the libaries interface later.
-//	libbsdl(*bsdl_file_content);
+	// space down a line
 	puts("\n");
 
-//	puts(*bsdl_file_content);
+	// this will later to migrated to other areas
+	// prep to use getline
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
 
-	close(bsdl_file);
+	// loop and to through all the lines
+	while ((read = getline(&line, &len, bsdl_file)) != -1)
+	{
+		// if this test here works I should get a display of the line number 
+		// and text of all the lines that start with text
+		if (line[0] == '-' & line[1] == '-')
+		{
+			printf("Retrieved line of length %zu :\n", read);
+			printf("%s", line);
+		}
+	}
+	free(line);
+
+	fclose(bsdl_file);
 	exit(EXIT_SUCCESS);
 }
