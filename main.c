@@ -30,24 +30,9 @@ int main(void)
 	// space down a line
 	puts("\n");
 
-	// this will later to migrated to other areas
-	// prep to use getline
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-
-	// loop and to through all the lines
-	while ((read = getline(&line, &len, bsdl_file)) != -1)
-	{
-		// if this test here works I should get a display of the line number 
-		// and text of all the lines that start with text
-		if (line[0] == '-' & line[1] == '-')
-		{
-			printf("Retrieved line of length %zu :\n", read);
-			printf("%s", line);
-		}
-	}
-	free(line);
+	// this is not what the interface to the library will look
+	// like in the long run but i need to start somewhere
+	libbsdl_initial_comments(bsdl_file);
 
 	fclose(bsdl_file);
 	exit(EXIT_SUCCESS);

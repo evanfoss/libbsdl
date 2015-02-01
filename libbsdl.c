@@ -30,26 +30,33 @@ void libbsdl_print_warnings(char *string[], unsigned short string_length)
 {
 	return;
 }
-
-extern unsigned int libbsdl_initial_comments(FILE *file)
+*/
+extern void libbsdl_initial_comments(FILE *file)
 {
 
 	unsigned int location = 0;
-	// loop from 0 to the end of line minus the length of the string.
-	for (location = 0; location < string_length; location++)
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	while ((read = getline(&line, &len, file)) != -1)
 	{
-		// if true then we found the comment
-		if (string[0] == "--")
+		// loop from 0 to the end of line minus the length of the string.
+		for (location = 0; location < read - 1; location++)
 		{
-			// printf("Retrieved line of length %zu :\n", read);
-			printf("%s", *string);
-			// this will terminate the loop
-			string_length = location;
+			// if true then we found the comment
+			if (line[location] == '-' && line[location + 1] == '-')
+			{
+				printf("%s", line);
+			}
 		}
+//		printf("Retrieved line of length %zu :\n", read);
+//		printf("counted to %zu", location);
+//		printf("\n");
 	}
-	return location;
+	free(line);	
+	return;
 }
-*/
+
 /*
 
 void libbsdl_ll_new_entry()
