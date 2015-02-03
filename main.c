@@ -47,7 +47,11 @@ int main(void)
 
 	// this is not what the interface to the library will look
 	// like in the long run but i need to start somewhere
-	libbsdl_initial_comments(bsdl_file);
+//	libbsdl_initial_comments(bsdl_file);
+
+	puts("\n");
+
+	libbsdl_preprocessor(bsdl_file);
 
 	fclose(bsdl_file);
 	exit(EXIT_SUCCESS);

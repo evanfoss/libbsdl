@@ -56,12 +56,13 @@
  *
  */
 
-//extern void libbsdl_preprocessor(void);
-
 // this should return a pointr to the initial comments in the bsdl file
 // technically like all comments they are optional but no file i have 
 // ever seen or heard of is with out them.
 extern void libbsdl_initial_comments(FILE *file);
+
+extern void libbsdl_preprocessor(FILE *file);
+void libbsdl_preprocessor_populate(FILE *file, size_t *len);
 
 //void libbsdl_print_warnings(char *string[], unsigned short string_length);
 

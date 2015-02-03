@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include "libbsdl.h"
 
+#define SEVEN 7
+
 /* 
  *
  */
@@ -37,16 +39,19 @@ extern void libbsdl_preprocessor(FILE *file)
 
 	unsigned int location = 0;
 	size_t len = 0;
-
+	// if the file we have been given is not there lets stop now.
+	if (file == NULL)
+	{
+		return;
+	}
 	// create head node
 	
 	// call recursive function
-	
+	libbsdl_preprocessor_populate(file, &len);
 	// is nead node address still a null pointer
 	// if yes then the file is empty it does not
 	// matter yes or know because we still return
 	// the same way.
-	free(line);
 	
 	return;
 }
@@ -54,29 +59,55 @@ extern void libbsdl_preprocessor(FILE *file)
 /*
  * 
  */
-void libbsdl_preprocessor_populate(FILE *file, size_t len)
+void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 {
 	char *line = NULL;
 	ssize_t read;
-	int location;
-	read = getline(&line, &len, file);
-	if (read == -1)
+	unsigned int location;
+	// what kind of line are we in? c = comment e = entity a = attribute and etc.
+	char flag = 'b';
+	while ((read = getline(&line, len, file)) != -1)
 	{
-		free(line);
-		return;
-	}
-	// loop from 0 to the end of line minus the length of the string.
-	for (location = 0; location < read - 1; location++)
-	{
-		// if true then we found the comment
-		if (line[location] == '-' && line[location + 1] == '-')
+		// loop from 0 to the end of line minus the length of the string.
+		for (location = 0; location < read - 1; location++)
 		{
-			printf("%s", line);
-		}
-		else if (line[location] =! ' ')
+		if (flag == 'b')
 		{
-			location == read;
+			// if true then we found the comment
+			if (line[location] == '-' && line[location + 1] == '-')
+			{
+				flag = 'c';
+				printf("comment found %s", line);
+			} else
+//			else if (line[location] =! ' ')
+//			{
+//				location == read;
+//			}
+			if (line[location] == 'e' && line[location + 1] == 'n' && line[location + 2] == 't' && line[location + 3] == 'i' && line[location + 4] == 't' && line[location + 5] == 'y')
+			{
+				flag = 'e';	
+				printf("entity found %s", line);
+				libbsdl_preprocessor_populate(file,len);
+			} else
+			if (line[location] == 'a' && line[location + 1] == 't')
+			{
+				flag = 'a';
+				printf("attribute found %s", line);
+			} else
+			if (line[location] == 'p' && line[location + 1] == 'o' && line[location + 2] == 'r' && line[location + 3] == 't')
+			{
+				flag = 'p';
+				printf("port found %s", line);
+			}
+			else if (flag != 'b' && line[location] != ' ')
+			{
+				flag = 'd';
+				printf("data found for last entry %s", line);
+			}
+//			printf("%d", strcmp(line[location], "--", 2));
 		}
+		}
+		flag = 'b';
 	}
 	free(line);
 	return;
