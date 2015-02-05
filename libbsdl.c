@@ -64,19 +64,17 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	char *line = NULL;
 	ssize_t read;
 	unsigned int location;
-	// what kind of line are we in? c = comment e = entity a = attribute and etc.
-	char flag = 'b';
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		// loop from 0 to the end of line minus the length of the string.
 		for (location = 0; location < read - 1; location++)
 		{
-		if (flag == 'b')
-		{
-			// if true then we found the comment
+			// at some point this should be changed to use strncasecmp(str1, str2, len) 
+			// but I have never seen a file in the wild were this text is capitalized 
+			// people seem to obey the conventions used everywhere else.
+			// this is actually very ugly. I will clean it up later.
 			if (line[location] == '-' && line[location + 1] == '-')
 			{
-				flag = 'c';
 				printf("comment found %s", line);
 			} else
 //			else if (line[location] =! ' ')
@@ -85,36 +83,34 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 //			}
 			if (line[location] == 'e' && line[location + 1] == 'n' && line[location + 2] == 't' && line[location + 3] == 'i' && line[location + 4] == 't' && line[location + 5] == 'y')
 			{
-				flag = 'e';	
 				printf("entity found %s", line);
 				libbsdl_preprocessor_populate(file,len);
 			} else
 			if (line[location] == 'a' && line[location + 1] == 't')
 			{
-				flag = 'a';
 				printf("attribute found %s", line);
 			} else
 			if (line[location] == 'p' && line[location + 1] == 'o' && line[location + 2] == 'r' && line[location + 3] == 't')
 			{
-				flag = 'p';
 				printf("port found %s", line);
 			}
-			else if (flag != 'b' && line[location] != ' ')
+			else if (line[location] != ' ')
 			{
-				flag = 'd';
 				printf("data found for last entry %s", line);
 			}
-//			printf("%d", strcmp(line[location], "--", 2));
+			//printf("%d", strmcmp(line[location], "--", 2));
 		}
-		}
-		flag = 'b';
 	}
 	free(line);
 	return;
 }
-
-
 /*
+void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
+{
+	return;
+}
+
+
 extern void libbsdl_print_comment_block()
 {
 	return;
@@ -158,30 +154,53 @@ extern void libbsdl_initial_comments(FILE *file)
 
 /*
 
-void libbsdl_ll_new_entry()
+struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last)
 {
 	return;
 }
 
-void libbsdl_ll_new_value()
+struct bsdl_node *libbsdl_ll_new_subnode(struct bsdl_node *subhead)
 {
 	return;
 }
 
-void libbsdl_ll_new_attribute()
+void libbsdl_ll_del_node(struct bsdl_node *node)
 {
 	return;
 }
 
-void libbsdl_ll_new_comment()
+void libbsdl_ll_del_subnode(struct bsdl_node *subnode)
 {
 	return;
 }
 
-void libbsdl_ll_del_list()
+void libbsdl_ll_del_list(struct bsdl_node *head)
+{
+	return;
+}
+
+void libbsdl_ll_del_sublist(struct bsdl_node *subhead)
 {
 	return;
 }
 */
+
+/*
+ * This is a node in the linked list used to store the preprocessed data.
+ */
+struct bsdl_node
+{
+	// obligatory
+	struct bsdl_node *next;
+	// The longest reserved word in the standard is 
+	// COMPONENT_CONFORMANCE see page 265 of 
+	// "The Boundary Scan Handbook" 2nd Ed.
+	char *name;
+	// The number of values is theoretically limitless.
+	char *value;
+	// if we have more than one value
+	struct bsdl_node *sub;
+};
+
 #endif
 
