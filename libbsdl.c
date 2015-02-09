@@ -34,7 +34,7 @@
 #include <string.h>
 #include "libbsdl.h"
 
-#define WORD_COUNT 8
+#define WORD_COUNT 11
 #define WORD_LENGTH_MAX 10
 
 struct bsdl_node
@@ -80,7 +80,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	ssize_t read;
 	unsigned int location;
 	unsigned int word_number;
-	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "end\0"};
+	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		word_number = 0;
