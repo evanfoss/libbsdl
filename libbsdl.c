@@ -26,10 +26,25 @@
 #define LIBBSDL_C_
 
 #include <stdio.h>
+/* When I first did this I was getting warnings from the compiler about 
+ * incompatible implicite delarations. The strlen function in stdlib.h 
+ * causes this. Please stick to the one in string.h
+ */
 #include <stdlib.h>
+#include <string.h>
 #include "libbsdl.h"
 
-#define SEVEN 7
+#define WORD_COUNT 8
+#define WORD_LENGTH_MAX 10
+
+struct bsdl_node
+{
+	struct bsdl_node *next;
+	char *name;
+	char *value;
+	struct bsdl_node *sub;
+};
+
 
 /* 
  *
@@ -64,41 +79,24 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	char *line = NULL;
 	ssize_t read;
 	unsigned int location;
+	unsigned int word_number;
+	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "end\0"};
 	while ((read = getline(&line, len, file)) != -1)
 	{
-		// loop from 0 to the end of line minus the length of the string.
-		for (location = 0; location < read - 1; location++)
+		word_number = 0;
+		for (word_number = 0; word_number <= WORD_COUNT; word_number++)
 		{
-			// at some point this should be changed to use strncasecmp(str1, str2, len) 
-			// but I have never seen a file in the wild were this text is capitalized 
-			// people seem to obey the conventions used everywhere else.
-			// this is actually very ugly. I will clean it up later.
-			if (line[location] == '-' && line[location + 1] == '-')
+			for (location = 0; location < read - 1; location++)
 			{
-				printf("comment found %s", line);
-			} else
-//			else if (line[location] =! ' ')
-//			{
-//				location == read;
-//			}
-			if (line[location] == 'e' && line[location + 1] == 'n' && line[location + 2] == 't' && line[location + 3] == 'i' && line[location + 4] == 't' && line[location + 5] == 'y')
-			{
-				printf("entity found %s", line);
-				libbsdl_preprocessor_populate(file,len);
-			} else
-			if (line[location] == 'a' && line[location + 1] == 't')
-			{
-				printf("attribute found %s", line);
-			} else
-			if (line[location] == 'p' && line[location + 1] == 'o' && line[location + 2] == 'r' && line[location + 3] == 't')
-			{
-				printf("port found %s", line);
+				// now i just need to clean up this bit.. and write a function to process the data that follows these tokens
+				if ( 0 == strncasecmp( &line[location],words[word_number], strlen(words[word_number]) ) )
+				{
+					if (word_number == 0)
+						printf("comment found %s", line);
+					if (word_number == 1)
+						printf("entity found %s", line);
+				}
 			}
-			else if (line[location] != ' ')
-			{
-				printf("data found for last entry %s", line);
-			}
-			//printf("%d", strmcmp(line[location], "--", 2));
 		}
 	}
 	free(line);
@@ -106,18 +104,6 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 }
 /*
 void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
-{
-	return;
-}
-
-
-extern void libbsdl_print_comment_block()
-{
-	return;
-}
-*/
-/*
-void libbsdl_print_warnings(char *string[], unsigned short string_length)
 {
 	return;
 }
@@ -153,20 +139,37 @@ extern void libbsdl_initial_comments(FILE *file)
 }
 
 /*
-
-struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last)
+ * Because of the way we are just stepping down the lines of the file 
+ * there is no need to impliment adding nodes in the middle of the list 
+ * only on the end. That is what this function does.
+ */
+struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last_node)
 {
-	return;
+	struct bsdl_node *next_node;
+	next_node = malloc(sizeof(struct bsdl_node));
+	if (next_node == NULL)
+	{
+		exit(EXIT_FAILURE);
+	}
+	next_node->next = NULL;
+	if (last_node->next != NULL)
+	{
+		last_node->next = next_node;
+	}
+	return next_node;
 }
-
+/*
 struct bsdl_node *libbsdl_ll_new_subnode(struct bsdl_node *subhead)
 {
 	return;
 }
 
-void libbsdl_ll_del_node(struct bsdl_node *node)
+struct bsdl_node *libbsdl_ll_previous_node(struct bsdl_node *node)
 {
-	return;
+}
+
+struct bsdl_node *libbsdl_ll_previous_subnode(struct bsdl_node *node)
+{
 }
 
 void libbsdl_ll_del_subnode(struct bsdl_node *subnode)
@@ -184,23 +187,6 @@ void libbsdl_ll_del_sublist(struct bsdl_node *subhead)
 	return;
 }
 */
-
-/*
- * This is a node in the linked list used to store the preprocessed data.
- */
-struct bsdl_node
-{
-	// obligatory
-	struct bsdl_node *next;
-	// The longest reserved word in the standard is 
-	// COMPONENT_CONFORMANCE see page 265 of 
-	// "The Boundary Scan Handbook" 2nd Ed.
-	char *name;
-	// The number of values is theoretically limitless.
-	char *value;
-	// if we have more than one value
-	struct bsdl_node *sub;
-};
 
 #endif
 

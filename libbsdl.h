@@ -62,29 +62,16 @@
 extern void libbsdl_initial_comments(FILE *file);
 
 extern void libbsdl_preprocessor(FILE *file);
+// void libbsdl_preprocessor_findtype(char *line, );
 void libbsdl_preprocessor_populate(FILE *file, size_t *len);
 //void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node);
 
 
-//void libbsdl_print_warnings(char *string[], unsigned short string_length);
-
+struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last);
 /*
- * This is a node in the linked list used to store the preprocessed data.
- *   
-struct bsdl_node 
-{
-// obligatory
-struct bsdl_node *next;
-// The longest reserved word in the standard is 
-// COMPONENT_CONFORMANCE see page 265 of 
-// "The Boundary Scan Handbook" 2nd Ed.
-char *name;
-// The number of values is theoretically limitless.
-char *value; 
-// I think 2^32 should be more than enough entries.
-unsigned int count;
-};*/
-
-
+struct bsdl_node *libbsdl_ll_new_subnode(struct bsdl_node *subhead);
+void libbsdl_ll_del_list(struct bsdl_node *head);
+void libbsdl_ll_del_sublist(struct bsdl_node *subhead);
+*/
 #endif
 

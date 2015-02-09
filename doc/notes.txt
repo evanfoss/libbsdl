@@ -1,0 +1,64 @@
+-- this is a comment you can tell because it starts with the two - in immediat sucession 
+
+
+entity PARTNAME is
+
+	generic (ATOMNAME : string := "string_describing_footprint");
+
+	generic (ATOMNAME : string); -- where the string is listed later as a constant
+
+	use IEEE_STD_NAME;
+
+	port ( pinname1, pinname2, pinname3, -- pins just listed
+		pinname4 : in bit;
+		pinname5 : out bit;
+		pinname6 : inout bit;
+		pinname7 : linkage bit;
+		pinname8 : linkage bit_vector ( 1 to 8 ); -- the scary thing is they don't all start at 1 or even 0?!
+		pinname9 : buffer bit;
+		pinname10, pinname11, pinname12 : in bit;
+		pinname10 : in bit -- notice how the last entry does not use an appostrophie.
+		);
+
+	constant ATOMNAME : ATOMNAME := "string" &
+		"which" &
+		"obeys all the same string rules layed out later on.";
+
+
+	attribute ATOMNAME of PARTNAME : entity is 
+		"string" &
+		"which " &
+		"has this terimation"; -- <- notice the ";"
+
+	attribute ATOMNAME of PARTNAME : entity is "can also use inline strings that end";
+
+	attribute ATOMNAME of PARTNAME : entity is 4; -- where 4 is any whole number
+
+	attribute ATOMNAME of VARIABLENAME : signal is TRUE 
+
+	attribute ATOMNAME of VARIABLENAME : signal is FALSE -- I don't think this is a real option but i wanted to be inclusive
+
+	attribute ATOMNAME of VARIABLENAME : signal is (10e2, both); 
+	-- where 10e2 is a stand in for any number in scientific/engineering notation for the frequency
+	-- and both is the edge type (BOTH, HIGH, and low is just implied if not stated)
+
+
+
+end PARTNAME;
+
+In a string you just conceptually replace \n with & and ignore white space both in and outside the "" marks.
+Basically anywhere but in a string you can ignore \n. In a string that would violate the syntax rules.
+Any time you see an ; or -- that is effectively the end of the line.
+The : is to denote the type of something.
+They use strings some times to list values "valuename (number)" or "valuename (number, number, number)"
+There is often meta data in how the lines of each string are broken down. 
+Sadly they are not trivial to apply.
+
+look at 3128at144_1532.bsd 
+
+short file example sctm005.bsm
+
+XC6SLX150L example of die bonded pin mapping
+
+XC6VCX130T_FF1156 diff pair + more weirdness
+
