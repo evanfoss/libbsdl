@@ -95,10 +95,10 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 				// now i just need to clean up this bit.. and write a function to process the data that follows these tokens
 				if ( ( 0 == strncasecmp( &line[location],words[word_number], word_length ) ) && ( 0 == strncmp( &line[location + word_length + 1], &space, 1) || 0 == strncmp( &line[location + word_length + 1], &tab, 1) || strncmp( &line[location + word_length + 1], &newline, 1) ) )
 				{
-					if ( location < word_length || ( location > word_length && ( 0 == strncmp( &line[location], &space, 1) || 0 == strncmp( &line[location], &tab, 1) ) ) )
+					if ( location < word_length || ( location > word_length && ( 0 == strncmp( &line[location - 1], &space, 1) || 0 == strncmp( &line[location - 1], &tab, 1) ) ) )
 					{
-						printf("found %s", words[word_number]);
-						printf("in this form %s", line);
+						printf("%s", words[word_number]);
+						printf("%s\t", line);
 					}
 				}
 			}
