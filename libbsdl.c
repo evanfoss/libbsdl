@@ -78,23 +78,28 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 {
 	char *line = NULL;
 	ssize_t read;
-	unsigned int location;
-	unsigned int word_number;
+	unsigned int location = 0;
+	unsigned int word_number = 0;
+	unsigned short word_length = 0;
+	char space = ' ';
+	char tab = '\t';
+	char newline = '\n';
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
 	while ((read = getline(&line, len, file)) != -1)
 	{
-		word_number = 0;
-		for (word_number = 0; word_number <= WORD_COUNT; word_number++)
+		for (word_number = 0; word_number < WORD_COUNT; word_number++)
 		{
 			for (location = 0; location < read - 1; location++)
 			{
+				word_length = strlen(words[word_number]);
 				// now i just need to clean up this bit.. and write a function to process the data that follows these tokens
-				if ( 0 == strncasecmp( &line[location],words[word_number], strlen(words[word_number]) ) )
+				if ( ( 0 == strncasecmp( &line[location],words[word_number], word_length ) ) && ( 0 == strncmp( &line[location + word_length + 1], &space, 1) || 0 == strncmp( &line[location + word_length + 1], &tab, 1) || strncmp( &line[location + word_length + 1], &newline, 1) ) )
 				{
-					if (word_number == 0)
-						printf("comment found %s", line);
-					if (word_number == 1)
-						printf("entity found %s", line);
+					if ( location < word_length || ( location > word_length && ( 0 == strncmp( &line[location], &space, 1) || 0 == strncmp( &line[location], &tab, 1) ) ) )
+					{
+						printf("found %s", words[word_number]);
+						printf("in this form %s", line);
+					}
 				}
 			}
 		}
