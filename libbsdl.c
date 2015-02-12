@@ -87,9 +87,9 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
 	while ((read = getline(&line, len, file)) != -1)
 	{
-		for (word_number = 0; word_number < WORD_COUNT; word_number++)
+		for (location = 0; location < read - 1; location++)
 		{
-			for (location = 0; location < read - 1; location++)
+			for (word_number = 0; word_number < WORD_COUNT; word_number++)
 			{
 				word_length = strlen(words[word_number]);
 				// now i just need to clean up this bit.. and write a function to process the data that follows these tokens
@@ -99,6 +99,8 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 					{
 						printf("%s", words[word_number]);
 						printf("%s\t", line);
+						word_number = WORD_COUNT + 1;
+						location = read;
 					}
 				}
 			}
