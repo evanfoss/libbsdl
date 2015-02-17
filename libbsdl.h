@@ -66,6 +66,8 @@ extern void libbsdl_preprocessor(FILE *file);
 void libbsdl_preprocessor_populate(FILE *file, size_t *len);
 //void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node);
 
+int libbsdl_is_whitespace(char line[], unsigned int number);
+
 
 struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last);
 /*

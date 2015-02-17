@@ -34,6 +34,7 @@
 #include <string.h>
 #include "libbsdl.h"
 
+
 #define WORD_COUNT 11
 #define WORD_LENGTH_MAX 10
 
@@ -92,10 +93,14 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 			for (word_number = 0; word_number < WORD_COUNT; word_number++)
 			{
 				word_length = strlen(words[word_number]);
+				// it is faster to see that the word space you are looking at is the length of the token you are looking for
+				// than to start by matching the whole word.
+				//if (( location < word_length || 0 < libbsdl_is_whitespace(line, location - 1)) && ( 0 < libbsdl_is_whitespace(line,( location + word_length + 1)) ))
+				if (( location <= word_length || ( location > word_length && ( 0 == strncmp( &line[location - 1], &space, 1) || 0 == strncmp( &line[location - 1], &tab, 1) ) ) ) && ( location < word_length || 0 < libbsdl_is_whitespace(line, location - 1)))
+				//if (( location < word_length || 0 < libbsdl_is_whitespace(line, location - 1)) &&  ( 0 == strncmp( &line[location + word_length + 1], &space, 1) || 0 == strncmp( &line[location + word_length + 1], &tab, 1) || strncmp( &line[location + word_length + 1], &newline, 1) ))
 				// now i just need to clean up this bit.. and write a function to process the data that follows these tokens
-				if ( ( 0 == strncasecmp( &line[location],words[word_number], word_length ) ) && ( 0 == strncmp( &line[location + word_length + 1], &space, 1) || 0 == strncmp( &line[location + word_length + 1], &tab, 1) || strncmp( &line[location + word_length + 1], &newline, 1) ) )
 				{
-					if ( location < word_length || ( location > word_length && ( 0 == strncmp( &line[location - 1], &space, 1) || 0 == strncmp( &line[location - 1], &tab, 1) ) ) )
+					if ( 0 == strncasecmp( &line[location],words[word_number], word_length ) )
 					{
 						printf("%s", words[word_number]);
 						printf("%s\t", line);
@@ -115,6 +120,28 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
 	return;
 }
 */
+
+/*
+ * The following is just to test if a character in a string is whitespace.
+ * Whitespace is defined as a space, tab, or newline.
+ */
+int libbsdl_is_whitespace(char line[], unsigned int number)
+{
+	char space = ' ';
+	char tab = '\t';
+	char newline = '\n';
+	// if we have recieved a negative array location something evil has happened
+	if ( number < 0 )
+	{
+		return 0;
+	}
+	if ( 0 == strncmp( &line[number], &space, 1) || 0 == strncmp( &line[number], &tab, 1) || 0 == strncmp( &line[number], &newline, 1) )
+	{
+		return 1;
+	}
+	return 0;
+}
+
 extern void libbsdl_initial_comments(FILE *file)
 {
 
