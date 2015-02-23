@@ -82,10 +82,12 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	unsigned int location = 0;
 	unsigned int word_number = 0;
 	unsigned short word_length = 0;
+	char tmp;
 	char space = ' ';
 	char tab = '\t';
 	char newline = '\n';
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
+	unsigned int count = 0;
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		for (location = 0; location < read - 1; location++)
@@ -95,15 +97,23 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 				word_length = strlen(words[word_number]);
 				// it is faster to see that the word space you are looking at is the length of the token you are looking for
 				// than to start by matching the whole word.
-				//if (( location < word_length || 0 < libbsdl_is_whitespace(line, location - 1)) && ( 0 < libbsdl_is_whitespace(line,( location + word_length + 1)) ))
-				if (( location <= word_length || ( location > word_length && ( 0 == strncmp( &line[location - 1], &space, 1) || 0 == strncmp( &line[location - 1], &tab, 1) ) ) ) && ( location < word_length || 0 < libbsdl_is_whitespace(line, location - 1)))
-				//if (( location < word_length || 0 < libbsdl_is_whitespace(line, location - 1)) &&  ( 0 == strncmp( &line[location + word_length + 1], &space, 1) || 0 == strncmp( &line[location + word_length + 1], &tab, 1) || strncmp( &line[location + word_length + 1], &newline, 1) ))
-				// now i just need to clean up this bit.. and write a function to process the data that follows these tokens
+			//	if ( ( location >= word_length && 1 == libbsdl_is_whitespace(line, (location - 1) )) || location < word_length)
+			//	if ( 1 == libbsdl_is_whitespace(line, (location + word_length + 1) ) )
+			//	if (( location > word_length && ( ' ' != line[location] || '\t' != line[location] || '\n' != line[location] ) ) )//|| location < word_length )
+				if ( location > (word_length - 1) && 1 != libbsdl_is_whitespace(line, (location - 1) ) ) // || location <= (word_length - 1) )
+				{
+					location++;
+				}
+				else
 				{
 					if ( 0 == strncasecmp( &line[location],words[word_number], word_length ) )
 					{
-						printf("%s", words[word_number]);
-						printf("%s\t", line);
+						count++;
+						printf(" count %d", count);
+						printf(" location %d", location);
+						printf(" word length %d", word_length);
+						printf(" word %s", words[word_number]);
+						printf(" line %s", line);
 						word_number = WORD_COUNT + 1;
 						location = read;
 					}
@@ -111,6 +121,9 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 			}
 		}
 	}
+	printf("\n");
+	printf("entries %d", count);
+	printf("\n\n");
 	free(line);
 	return;
 }
@@ -135,7 +148,7 @@ int libbsdl_is_whitespace(char line[], unsigned int number)
 	{
 		return 0;
 	}
-	if ( 0 == strncmp( &line[number], &space, 1) || 0 == strncmp( &line[number], &tab, 1) || 0 == strncmp( &line[number], &newline, 1) )
+	if ( line[number] == space || line[number] == tab || line[number] == newline )
 	{
 		return 1;
 	}
