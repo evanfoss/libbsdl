@@ -13,7 +13,7 @@ entity vapor9000 is
 
 	generic (PHYSICAL_PIN_MAP : string := "DIP_28");
 
-	*port (
+	port** (
 		TDI: in bit;				-- the JTAG pins
 		TMS: in bit;
 		TCK: out bit;

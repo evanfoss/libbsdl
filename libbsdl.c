@@ -82,12 +82,9 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	unsigned int location = 0;
 	unsigned int word_number = 0;
 	unsigned short word_length = 0;
-	char tmp;
-	char space = ' ';
-	char tab = '\t';
-	char newline = '\n';
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
 	unsigned int count = 0;
+	char tmp;
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		for (location = 0; location < read - 1; location++)
@@ -97,18 +94,16 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 				word_length = strlen(words[word_number]);
 				// it is faster to see that the word space you are looking at is the length of the token you are looking for
 				// than to start by matching the whole word.
-			//	if ( ( location >= word_length && 1 == libbsdl_is_whitespace(line, (location - 1) )) || location < word_length)
-			//	if ( 1 == libbsdl_is_whitespace(line, (location + word_length + 1) ) )
-			//	if (( location > word_length && ( ' ' != line[location] || '\t' != line[location] || '\n' != line[location] ) ) )//|| location < word_length )
-				if ( location > (word_length - 1) && 1 != libbsdl_is_whitespace(line, (location - 1) ) ) // || location <= (word_length - 1) )
+				if ( location > (word_length - 1) && 1 != libbsdl_is_whitespace(line, (location - 1) ) )
 				{
 					location++;
 				}
-				else
+				else if ( ' ' == line[word_length+location] )
 				{
 					if ( 0 == strncasecmp( &line[location],words[word_number], word_length ) )
 					{
 						count++;
+						printf(" should be end of word %s", &line[location + word_length]);
 						printf(" count %d", count);
 						printf(" location %d", location);
 						printf(" word length %d", word_length);
@@ -140,15 +135,16 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  */
 int libbsdl_is_whitespace(char line[], unsigned int number)
 {
-	char space = ' ';
-	char tab = '\t';
-	char newline = '\n';
-	// if we have recieved a negative array location something evil has happened
-	if ( number < 0 )
+	char ascii_space = ' ';
+	char ascii_tab = '\t';
+	char ascii_newline = '\n';
+	char ascii_terminate = '\0';
+	// if we have recieved a negative array location or one off the end of the array something evil has happened
+	if ( number < 0 || number > ( strlen(line) - 1 ) )
 	{
 		return 0;
 	}
-	if ( line[number] == space || line[number] == tab || line[number] == newline )
+	if ( line[number] == ascii_space || line[number] == ascii_tab || line[number] == ascii_newline || line[number] == ascii_terminate )
 	{
 		return 1;
 	}
