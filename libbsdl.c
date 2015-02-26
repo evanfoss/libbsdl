@@ -93,6 +93,10 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	unsigned int count = 0;
 	// word flag has two positions S = set (just found a word) and R = reset (no word on this line) note that this excludes comments
 	char word_flag = 'R';
+	// how many ( marks have we seen?
+	unsigned int parenthesis = 0;
+	// how many " marks have we seen?
+	unsigned int quote = 0;
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
@@ -122,10 +126,49 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 					word_number = WORD_COUNT + 1;
 				}
 			}
+			// the following should eventually become a switch case statement
 			if (word_flag == 'S')
 			{
 				printf("word flag set");
 			}
+			if ( '(' == line[location] )
+			{
+				parenthesis++;
+			}
+			else if ( ')' == line[location] )
+			{
+				parenthesis--;
+			}
+			else if ( '"' == line[location] )
+			{
+				if ( 0 >= quote )
+				{
+					quote++;
+				}
+				else if ( 0 < quote )
+				{
+					quote--;
+				}
+			}
+			else if ( ':' == line[location] )
+			{
+				if ( '=' == line[location + 1]  )
+				{
+					location++;
+				}
+				else
+				{
+					//
+				}
+			}
+		}
+		if ( 0 > parenthesis )
+		{
+			// immediate none recoverable syntax error
+		}
+		if ( 0 != quote )
+		{
+			// immediate none recoverable syntax error
 		}
 	}
 	printf("\n");
