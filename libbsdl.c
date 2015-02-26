@@ -162,10 +162,6 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 				}
 			}
 		}
-		if ( 0 > parenthesis )
-		{
-			// immediate none recoverable syntax error
-		}
 		if ( 0 != quote )
 		{
 			// immediate none recoverable syntax error
