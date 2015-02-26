@@ -171,6 +171,10 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 			// immediate none recoverable syntax error
 		}
 	}
+	if ( 0 > parenthesis )
+	{
+		// immediate none recoverable syntax error
+	}
 	printf("\n");
 	printf("entries %d", count);
 	printf("\n\n");
