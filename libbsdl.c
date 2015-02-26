@@ -77,14 +77,23 @@ extern void libbsdl_preprocessor(FILE *file)
  */
 void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 {
+	// the line we are on
 	char *line = NULL;
+	// length of the line we are on
 	ssize_t read;
+	// the location in the line we are looking at
 	unsigned int location = 0;
+	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
+	// the length of the word we are looking for
 	unsigned short word_length = 0;
+	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "string", "of", "is", "signal", "vector", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
+	// the number of words we have found so far
 	unsigned int count = 0;
+	// word flag has two positions S = set (just found a word) and R = reset (no word on this line) note that this excludes comments
 	char word_flag = 'R';
+	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		for (location = 0; location < read - 1; location++)
@@ -103,6 +112,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 					if ( 0 == word_number )
 					{
 						location = read;
+						word_flag = 'R';
 					}
 					else
 					{
