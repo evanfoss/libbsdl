@@ -102,15 +102,14 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 					// if we are in the first word which is -- then we are in a comment so skip the rest of the line
 					if ( 0 == word_number )
 					{
-						word_number = WORD_COUNT + 1;
 						location = read;
 					}
 					else
 					{
-						word_number = WORD_COUNT + 1;
 						location += strlen(words[word_number]);
 						word_flag = 'S';
 					}
+					word_number = WORD_COUNT + 1;
 				}
 			}
 			if (word_flag == 'S')
