@@ -91,27 +91,15 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 		{
 			for (word_number = 0; word_number < WORD_COUNT; word_number++)
 			{
-				word_length = strlen(words[word_number]);
-				// it is faster to see that the word space you are looking at is the length of the token you are looking for
-				// than to start by matching the whole word.
-				if ( location > (word_length - 1) && 1 != libbsdl_is_whitespace(line, (location - 1) ) )
+				if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
 				{
-					location++;
-				}
-				else if ( ' ' == line[word_length+location] )
-				{
-					if ( 0 == strncasecmp( &line[location],words[word_number], word_length ) )
-					{
-						count++;
-						printf(" should be end of word %s", &line[location + word_length]);
-						printf(" count %d", count);
-						printf(" location %d", location);
-						printf(" word length %d", word_length);
-						printf(" word %s", words[word_number]);
-						printf(" line %s", line);
-						word_number = WORD_COUNT + 1;
-						location = read;
-					}
+					count++;
+					printf(" count %d", count);
+					printf(" location %d", location);
+					printf(" word %s", words[word_number]);
+					printf(" line %s", line);
+					word_number = WORD_COUNT + 1;
+					location = read;
 				}
 			}
 		}
@@ -128,6 +116,29 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
 	return;
 }
 */
+
+/* 
+ * This function tests for a word in a line of text in a specific location with case insenitivity.
+ * It does this slightly faster than a normal strncasecmp. 
+ *
+ */
+int libbsdl_offset_is_word(char line[], char word[], unsigned int offset)
+{
+	unsigned int word_length = 0;
+	word_length = strlen(word);
+	if ( offset > (word_length - 1) && 1 != libbsdl_is_whitespace(line, (offset - 1) ) )
+	{
+		return 0;
+	}
+	else if ( ' ' == line[word_length + offset] )
+	{
+		if ( 0 == strncasecmp( &line[offset],word, word_length ) )
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
 
 /*
  * The following is just to test if a character in a string is whitespace.
