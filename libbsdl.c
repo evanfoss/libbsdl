@@ -35,7 +35,7 @@
 #include "libbsdl.h"
 
 
-#define WORD_COUNT 11
+#define WORD_COUNT 16
 #define WORD_LENGTH_MAX 10
 
 struct bsdl_node
@@ -82,13 +82,14 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	unsigned int location = 0;
 	unsigned int word_number = 0;
 	unsigned short word_length = 0;
-	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
+	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "string", "of", "is", "signal", "vector", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
 	unsigned int count = 0;
-	char tmp;
+	char word_flag = 'R';
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		for (location = 0; location < read - 1; location++)
 		{
+			word_flag = 'R';
 			for (word_number = 0; word_number < WORD_COUNT; word_number++)
 			{
 				if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
@@ -98,9 +99,23 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 					printf(" location %d", location);
 					printf(" word %s", words[word_number]);
 					printf(" line %s", line);
-					word_number = WORD_COUNT + 1;
-					location = read;
+					// if we are in the first word which is -- then we are in a comment so skip the rest of the line
+					if ( 0 == word_number )
+					{
+						word_number = WORD_COUNT + 1;
+						location = read;
+					}
+					else
+					{
+						word_number = WORD_COUNT + 1;
+						location += strlen(words[word_number]);
+						word_flag = 'S';
+					}
 				}
+			}
+			if (word_flag == 'S')
+			{
+				printf("word flag set");
 			}
 		}
 	}
