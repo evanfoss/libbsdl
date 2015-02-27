@@ -77,95 +77,20 @@ extern void libbsdl_preprocessor(FILE *file)
  */
 void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 {
+	unsigned int count = 0;
 	// the line we are on
 	char *line = NULL;
 	// length of the line we are on
 	ssize_t read;
 	// the location in the line we are looking at
 	unsigned int location = 0;
-	// the number corsponding to the word we are looking for right now
-	unsigned int word_number = 0;
-	// the length of the word we are looking for
-	unsigned short word_length = 0;
-	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
-	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "string", "of", "is", "signal", "vector", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
-	// the number of words we have found so far
-	unsigned int count = 0;
-	// word flag has two positions S = set (just found a word) and R = reset (no word on this line) note that this excludes comments
-	char word_flag = 'R';
 	// how many ( marks have we seen?
 	unsigned int parenthesis = 0;
-	// how many " marks have we seen?
-	unsigned int quote = 0;
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
-		for (location = 0; location < read - 1; location++)
-		{
-			word_flag = 'R';
-			for (word_number = 0; word_number < WORD_COUNT; word_number++)
-			{
-				if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
-				{
-					count++;
-					printf(" count %d", count);
-					printf(" location %d", location);
-					printf(" word %s", words[word_number]);
-					printf(" line %s", line);
-					// if we are in the first word which is -- then we are in a comment so skip the rest of the line
-					if ( 0 == word_number )
-					{
-						location = read;
-						word_flag = 'R';
-					}
-					else
-					{
-						location += strlen(words[word_number]);
-						word_flag = 'S';
-					}
-					word_number = WORD_COUNT + 1;
-				}
-			}
-			// the following should eventually become a switch case statement
-			if (word_flag == 'S')
-			{
-				printf("word flag set");
-			}
-			if ( '(' == line[location] )
-			{
-				parenthesis++;
-			}
-			else if ( ')' == line[location] )
-			{
-				parenthesis--;
-			}
-			else if ( '"' == line[location] )
-			{
-				if ( 0 >= quote )
-				{
-					quote++;
-				}
-				else if ( 0 < quote )
-				{
-					quote--;
-				}
-			}
-			else if ( ':' == line[location] )
-			{
-				if ( '=' == line[location + 1]  )
-				{
-					location++;
-				}
-				else
-				{
-					//
-				}
-			}
-		}
-		if ( 0 != quote )
-		{
-			// immediate none recoverable syntax error
-		}
+//		libbsdl_line_preprocessor();
+		count++;
 	}
 	if ( 0 > parenthesis )
 	{
@@ -183,6 +108,57 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
 	return;
 }
 */
+
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
+{
+	// word flag has two positions S = set (just found a word) and R = reset (no word on this line) note that this excludes comments
+	char word_flag = 'R';
+	// the number of words we have found so far
+	unsigned int count = 0;
+	// how many " marks have we seen?
+	unsigned int quote = 0;
+	// the number corsponding to the word we are looking for right now
+	unsigned int word_number = 0;
+	// the length of the word we are looking for
+	unsigned short word_length = 0;
+	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
+	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "string", "of", "is", "signal", "vector", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
+	for (location = 0; location < line_length - 1; location++)
+	{
+		word_flag = 'R';
+		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
+		{
+			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
+			{
+				count++;
+				printf(" count %d", count);
+				printf(" location %d", location);
+				printf(" word %s", words[word_number]);
+				printf(" line %s", line);
+				// if we are in the first word which is -- then we are in a comment so skip the rest of the line
+				if ( 0 == word_number )
+				{
+					location = line_length;
+					word_flag = 'R';
+				}
+				else
+				{
+					location += strlen(words[word_number]);
+					word_flag = 'S';
+				}
+				word_number = WORD_COUNT + 1;
+			}
+		}
+	}
+	// the following should eventually become a switch case statement
+	if ( 0 != quote )
+	{
+		// immediate none recoverable syntax error
+		return -1;
+	}
+	return 0;
+}
+
 
 /* 
  * This function tests for a word in a line of text in a specific location with case insenitivity.
