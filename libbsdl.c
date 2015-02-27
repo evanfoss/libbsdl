@@ -123,6 +123,13 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 	unsigned short word_length = 0;
 	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "string", "of", "is", "signal", "vector", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
+
+	// make sure we have not hit the end of the line (terminal case for recursion)
+	if ( line_length <= location )
+	{
+		return 0;
+	}
+
 	for (location = 0; location < line_length - 1; location++)
 	{
 		word_flag = 'R';
