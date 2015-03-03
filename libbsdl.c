@@ -214,6 +214,25 @@ int libbsdl_is_whitespace(char line[], unsigned int number)
 	return 0;
 }
 
+/* 
+ * Search for a character ahead of a given location.
+ * -1 means the character was not found. One means it did.
+ */
+int libbsdl_line_search_char(char line[], unsigned int offset, char looking_for)
+{
+	unsigned int location;
+	unsigned int line_length = 0;
+	line_length = strlen(line) - 1;
+	for (location = offset; location < line_length;location++)
+	{
+		if ( looking_for == line[location] )
+		{
+			return location;
+		}
+	}
+	return -1;
+}
+
 extern void libbsdl_initial_comments(FILE *file)
 {
 

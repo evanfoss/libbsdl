@@ -69,7 +69,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location);
 int libbsdl_offset_is_word(char line[], char word[], unsigned int offset);
 
 int libbsdl_is_whitespace(char line[], unsigned int number);
-
+int libbsdl_line_search_char(char line[], unsigned int offset, char looking_for);
 
 struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last);
 /*
