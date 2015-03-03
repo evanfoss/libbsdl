@@ -120,8 +120,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 {
 	// word flag has two positions S = set (just found a word) and R = reset (no word on this line) note that this excludes comments
 	char word_flag = 'R';
-	// the number of words we have found so far
-	unsigned int count = 0;
 	// how many " marks have we seen?
 	unsigned int quote = 0;
 	// the number corsponding to the word we are looking for right now
@@ -144,8 +142,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 		{
 			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
 			{
-				count++;
-				printf(" count %d", count);
 				printf(" location %d", location);
 				printf(" word %s", words[word_number]);
 				printf(" line %s", line);
@@ -153,7 +149,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 				if ( 0 == word_number )
 				{
 					location = line_length;
-					word_flag = 'R';
 					// copy the rest of the line to a comment node
 					return 0;
 				}
