@@ -118,8 +118,6 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  */
 int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 {
-	// word flag has two positions S = set (just found a word) and R = reset (no word on this line) note that this excludes comments
-	char word_flag = 'R';
 	// how many " marks have we seen?
 	unsigned int quote = 0;
 	// the number corsponding to the word we are looking for right now
@@ -135,9 +133,8 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 		return 0;
 	}
 
-	for (location = 0; location < line_length - 1; location++)
+	for (; location < line_length - 1; location++)
 	{
-		word_flag = 'R';
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{
 			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
@@ -155,8 +152,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 				else
 				{
 					location += strlen(words[word_number]);
-					word_flag = 'S';
-					return 0;
+					return libbsdl_line_preprocessor(line_length, line, location);
 					// call this function again
 				}
 				word_number = WORD_COUNT + 1;
