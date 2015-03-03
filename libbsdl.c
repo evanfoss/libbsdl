@@ -89,7 +89,8 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
-//		libbsdl_line_preprocessor();
+		location = 0;
+		libbsdl_line_preprocessor(read, line, location);
 		count++;
 	}
 	if ( 0 > parenthesis )
@@ -97,7 +98,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 		// immediate none recoverable syntax error
 	}
 	printf("\n");
-	printf("entries %d", count);
+	printf("lines %d", count);
 	printf("\n\n");
 	free(line);
 	return;
@@ -109,6 +110,12 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
 }
 */
 
+/* 
+ * This function really does not read a whole line. What it does is recrusvily process a line one segment at a time. 
+ * 
+ *
+ *
+ */
 int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 {
 	// word flag has two positions S = set (just found a word) and R = reset (no word on this line) note that this excludes comments
@@ -147,11 +154,15 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 				{
 					location = line_length;
 					word_flag = 'R';
+					// copy the rest of the line to a comment node
+					return 0;
 				}
 				else
 				{
 					location += strlen(words[word_number]);
 					word_flag = 'S';
+					return 0;
+					// call this function again
 				}
 				word_number = WORD_COUNT + 1;
 			}
