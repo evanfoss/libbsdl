@@ -34,7 +34,6 @@ int main(void)
 	// open an example file
 	FILE *bsdl_file;
 	char bsdl_file_name[] = "vaporware9000processor.bsdl";
-	struct stat file_status_buffer;
 	bsdl_file = fopen(bsdl_file_name, "r");
 	if (bsdl_file == NULL)
 	{
@@ -47,11 +46,11 @@ int main(void)
 
 	// this is not what the interface to the library will look
 	// like in the long run but i need to start somewhere
-//	libbsdl_initial_comments(bsdl_file);
+	libbsdl_initial_comments(bsdl_file);
 
 	puts("\n");
 
-	libbsdl_preprocessor(bsdl_file);
+//	libbsdl_preprocessor(bsdl_file);
 
 	fclose(bsdl_file);
 	exit(EXIT_SUCCESS);

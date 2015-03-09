@@ -53,7 +53,6 @@ struct bsdl_node
 extern void libbsdl_preprocessor(FILE *file)
 {
 
-	unsigned int location = 0;
 	size_t len = 0;
 	// if the file we have been given is not there lets stop now.
 	if (file == NULL)
@@ -122,8 +121,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 	unsigned int quote = 0;
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
-	// the length of the word we are looking for
-	unsigned short word_length = 0;
 	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"--\0", "string", "of", "is", "signal", "vector", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
 
@@ -246,18 +243,15 @@ extern void libbsdl_initial_comments(FILE *file)
 		for (location = 0; location < read - 1; location++)
 		{
 			// if true then we found the comment
-			if (line[location] == '-' && line[location + 1] == '-')
+			if ('-' == line[location] && '-' == line[location + 1])
 			{
 				printf("%s", line);
 			}
-			else if (line[location] =! ' ')
+			else if (' ' != line[location] )
 			{
-				location == read;
+				location = read;
 			}
 		}
-//		printf("Retrieved line of length %zu :\n", read);
-//		printf("counted to %zu", location);
-//		printf("\n");
 	}
 	free(line);	
 	return;

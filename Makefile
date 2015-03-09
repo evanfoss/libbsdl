@@ -38,7 +38,7 @@ libbsdl:
 test:
 	clear
 	echo 'testing lib bsdl'
-	$(CC) $(SRC_FILES_TEST) $(SRC_FILES) -o test.bin
+	$(CC) -Wall $(SRC_FILES_TEST) $(SRC_FILES) -o test.bin
 	./test.bin
 	rm test.bin
 
