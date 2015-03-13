@@ -89,7 +89,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		location = 0;
-		libbsdl_line_preprocessor(read, line, location);
+		libbsdl_line_preprocessor(read, line, count, location);
 		count++;
 	}
 	if ( 0 > parenthesis )
@@ -115,7 +115,7 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  *
  *
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location)
 {
 	// how many " marks have we seen?
 	unsigned int quote = 0;
@@ -136,6 +136,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 		{
 			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
 			{
+				printf(" line #%d", line_number);
 				printf(" location %d", location);
 				printf(" word %s", words[word_number]);
 				printf(" line %s", line);
@@ -149,7 +150,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], int location)
 				else
 				{
 					location += strlen(words[word_number]);
-					return libbsdl_line_preprocessor(line_length, line, location);
+					return libbsdl_line_preprocessor(line_length, line, line_number, location);
 					// call this function again
 				}
 				word_number = WORD_COUNT + 1;

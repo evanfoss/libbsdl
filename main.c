@@ -41,16 +41,13 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	// space down a line
-	puts("\n");
-
+/*	puts("*** test initial comment function ***\n");
 	// this is not what the interface to the library will look
 	// like in the long run but i need to start somewhere
 	libbsdl_initial_comments(bsdl_file);
-
-	puts("\n");
-
-//	libbsdl_preprocessor(bsdl_file);
+*/
+	puts("*** test preprocessor ***\n");
+	libbsdl_preprocessor(bsdl_file);
 
 	fclose(bsdl_file);
 	exit(EXIT_SUCCESS);
