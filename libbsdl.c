@@ -177,7 +177,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			if ( '"' == line[location] )
 			{
 				printf(" location %d", location);
-				printf(" end of string %s", line);
+				printf(" end of string %s", line)a
+				location++;
+				//recurse here and look for comments
 			} else
 			if ( ';' == line[location] )
 			{
