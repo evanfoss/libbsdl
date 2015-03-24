@@ -85,11 +85,12 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	unsigned int location = 0;
 	// how many ( marks have we seen?
 	unsigned int parenthesis = 0;
+	char mode = 'w';
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		location = 0;
-		libbsdl_line_preprocessor(read, line, count, location);
+		libbsdl_line_preprocessor(read, line, count, location, mode);
 		count++;
 	}
 	if ( 0 > parenthesis )
@@ -115,7 +116,7 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  *
  *
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location)
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char mode)
 {
 	// how many " marks have we seen?
 	unsigned int quote = 0;
@@ -132,30 +133,69 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 
 	for (; location < line_length - 1; location++)
 	{
-		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
+		if ( 'd' != mode )
 		{
-			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
-			{
-				printf(" line #%d", line_number);
-				printf(" location %d", location);
-				printf(" word %s", words[word_number]);
-				printf(" line %s", line);
-				// if we are in the first word which is -- then we are in a comment so skip the rest of the line
-				if ( 0 == word_number )
+			for (word_number = 0; word_number < WORD_COUNT; word_number++)	
+			{	
+				if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
 				{
-					location = line_length;
-					// copy the rest of the line to a comment node
-					return 0;
+					printf(" line #%d", line_number);
+					printf(" location %d", location);
+					printf(" word %s", words[word_number]);
+					printf(" line %s", line);
+					// if we are in the first word which is -- then we are in a comment so skip the rest of the line
+					if ( 0 == word_number )
+					{
+						location = line_length;
+						// copy the rest of the line to a comment node
+						return 0;
+					}
+					else
+					{
+						location += strlen(words[word_number]);
+						return libbsdl_line_preprocessor(line_length, line, line_number, location, mode);
+						// call this function again
+					}
+					word_number = WORD_COUNT + 1;
 				}
-				else
-				{
-					location += strlen(words[word_number]);
-					return libbsdl_line_preprocessor(line_length, line, line_number, location);
-					// call this function again
-				}
-				word_number = WORD_COUNT + 1;
 			}
-		}
+			if ( '"' == line[location] )
+			{
+				mode = 'd';
+				printf(" location %d", location);
+				printf(" string found %s", line);
+			} else
+			if ( ';' == line[location] )
+			{
+				mode = 'u';
+				printf(" location %d", location);
+				printf(" end of words %s", line);
+			}
+		} else
+		if ( 'd' == mode )
+		{
+			if ( '"' == line[location] )
+			{
+				printf(" location %d", location);
+				printf(" end of string %s", line);
+			} else
+			if ( ';' == line[location] )
+			{
+				printf(" location %d", location);
+				printf(" end of data %s", line);
+			} else
+			if ( '&' == line[location] )
+			{
+				printf(" location %d", location);
+				printf(" more string left %s", line);
+				// this is were we call recurse
+			}
+		} 
+		/*if ( 'u' == mode && '-' == line[location] )
+		{
+			printf(" comment ");
+			//return -1;
+		}*/
 	}
 	// the following should eventually become a switch case statement
 	if ( 0 != quote )
