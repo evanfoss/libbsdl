@@ -42,6 +42,70 @@ with the expectation that the user will pick the correct one. To me this
 is nuts but I am sure the IEEE had their reasons. I have been told that 
 being on those standards groups can be hard.
 
+Right now this is the vision of the libraries internal workings. Try 
+to picture the file on the left side and the world after the library on 
+the right.
+
+   /-----------------------libbsdl--------------------\
+   |						      |
+   |  /-------------\   /------\   /--------------\   |
+-->|->|fpreprocessor|-->|memory|-->|fpostprocessor|-->|-->
+   |  \-------------/   \------/   \--------------/   |
+   |						      |
+   \--------------------------------------------------/
+
+Eventually though I would like to have this. Notice there is no prevision 
+for access to the raw text. If you want to edit then open a text editor.
+
+   /-----------------------------libbsdl-----------------------------\
+   |								     |
+   |	    /---------\				/----------\	     |
+   |	 -->|fpreproc.|>---		     -->|fpostproc.|>---     |
+   |	/   \---------/	   \		    /	\----------/	\    |
+   |   /		    \   /------\   /			 \   |
+<---->*			     *<>|memory|<>*			  *<---->
+   |   \		    /   \------/   \			 /   |
+   |	\   /----------\   /		    \   /---------\	/    |
+   |	 --<|bpostproc.|<--		     --<|bpreproc.|<----     |
+   |	    \----------/			\---------/	     |
+   |								     |
+   |			/---------------------\			     |
+   |			| internal com. code  |			     |
+   |			|(ex. string handling)|			     |
+   |			\---------------------/			     |
+   \-----------------------------------------------------------------/
+
+How do I want to use it in the short term? Well I picture something like 
+this. Two parallel workflows one for gEDA and the other for openocd.
+
+                           /---------User Land--------\
+
+   /-------\   /-------\   /--------\	/-------------\
+-->|libbsdl|>->|edacore|>->|bsdl2sym|>->|gschem & etc.|
+   \-------/   \-------/   \--------/	\-------------/
+
+   /-------\				/-------\
+-->|libbsdl|<-------------------------->|openocd|
+   \-------/				\-------/
+
+Eventually the idea would be add an aditional workflow to do this for 
+KiCad. (Please note I leave it to someone else more familiar with the 
+KiCad codebase to add this. I don't even know if this graph makes sense 
+given their architecture.)
+
+   /-------\   /-------\   /----------\   /-----\
+-->|libbsdl|>->|edacore|>->|bsdl2kisym|>->|KiCad|
+   \-------/   \-------/   \----------/   \-----/
+
+Now this bit really excites me even though it will probably only be used 
+by a handfull of users. I really want to do this.
+
+   /-------\		 /-------\       /-------------\     /------\
+-->|libbsdl|<----------->|openocd|<~~~~~>|gschem plugin|<--->|gschem|
+   \-------/             \-------/
+
+Note: The ~ is meant to symbolize IP traffic instead of regular flow.
+
 This is GPL V2 licensed but you can bump that up to V3. Not to kick off a 
 holy war here but I am not a big fan of GPL V3. I only ask that people 
 please don't do it.
