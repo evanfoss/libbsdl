@@ -84,20 +84,17 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	// the location in the line we are looking at
 	unsigned int location = 0;
 	// how many ( marks have we seen?
-	unsigned int parenthesis = 0;
+	unsigned int depth = 0;
 	char mode = 'w';
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		location = 0;
+		printf("\n");
 		printf("%s", line);
 		printf("\n");
-		libbsdl_line_preprocessor(read, line, count, location, mode);
+		libbsdl_line_preprocessor(read, line, count, location, mode, depth);
 		count++;
-	}
-	if ( 0 > parenthesis )
-	{
-		// immediate none recoverable syntax error
 	}
 	printf("\n");
 	printf("lines %d", count);
@@ -118,10 +115,8 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  *
  *
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char mode)
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char mode, unsigned int depth)
 {
-	// how many " marks have we seen?
-	unsigned int quote = 0;
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
 	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
@@ -133,7 +128,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		return 0;
 	}
-
+	printf("depth %d", depth);
+	printf("\n");
+	depth++;
 	for (; location < line_length - 1; location++)
 	{
 		if ( '-' == line[location] && '-' == line[location + 1] )
@@ -151,11 +148,27 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			if ( '=' == line[location + 1] )
 			{
 				printf(" := (equivilence) \n");
-			}
-			else
+			} else
 			{
 				printf(" : (assignment of) \n");
 			}
+			location++;
+			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+			return 0;
+		} else
+		if ( '"' == line[location] )
+		{
+			mode = 'd';
+			// look ahead for second quote mark and copy bulk then go to that location + 1
+			printf(" location %d", location);
+			printf(" start of string found\n");
+			location++;
+			location = libbsdl_line_search_char(line, location, '"');
+			printf(" location %d", location);
+			printf(" end of string found\n");
+			location++;
+			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+			return 0;
 		} else
 		if ( 'd' != mode )
 		{
@@ -167,60 +180,43 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 					printf(" word %s", words[word_number]);
 					printf("\n");
 					location += strlen(words[word_number]);
-					if ( 0 != quote )
-					{
-						return -1;
-					}
-					return libbsdl_line_preprocessor(line_length, line, line_number, location, mode);
+					return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+					return 0;
 					// call this function again
 					word_number = WORD_COUNT + 1;
 				}
 			}
-			if ( '"' == line[location] )
-			{
-				mode = 'd';
-				quote++;
-				marker = location;
-				printf(" location %d", location);
-				printf(" start of string found\n");
-				// EVAN ADD the code to search for end of string here too.
-			} else
 			if ( ';' == line[location] )
 			{
 				//mode = 'u';
 				printf(" location %d", location);
 				printf(" end of words\n");
+				location++;
+				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+				return 0;
 			}
 		} else
 		if ( 'd' == mode )
 		{
-			if ( '"' == line[location] )
-			{
-				printf(" location %d", location);
-				printf(" end of string\n");
-				location++;
-				quote--;
-				marker = 0;
-				//recurse here and look for comments
-			} else
 			if ( ';' == line[location] )
 			{
 				printf(" location %d", location);
 				printf(" end of data\n");
+				location++;
+				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+				return 0;
+
 			} else
 			if ( '&' == line[location] )
 			{
 				printf(" location %d", location);
 				printf(" more string left\n");
 				// this is were we call recurse
+				location++;
+				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+				return 0;
 			}
 		} 
-	}
-	// the following should eventually become a switch case statement
-	if ( 0 != quote )
-	{
-		// immediate none recoverable syntax error
-		return -1;
 	}
 	return 0;
 }
