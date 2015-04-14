@@ -195,28 +195,16 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
 				return 0;
 			}
-		} else
-		if ( 'd' == mode )
+		}
+		if ( '&' == line[location] )
 		{
-			if ( ';' == line[location] )
-			{
-				printf(" location %d", location);
-				printf(" end of data\n");
-				location++;
-				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-				return 0;
-
-			} else
-			if ( '&' == line[location] )
-			{
-				printf(" location %d", location);
-				printf(" more string left\n");
-				// this is were we call recurse
-				location++;
-				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-				return 0;
-			}
-		} 
+			printf(" location %d", location);
+			printf(" more string left\n");
+			// this is were we call recurse
+			location++;
+			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+			return 0;
+		}
 	}
 	return 0;
 }
