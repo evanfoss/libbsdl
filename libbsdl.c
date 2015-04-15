@@ -123,6 +123,12 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
 	char comment[2] = {"--"};
 	unsigned int marker = 0;
+	// fail if we exit after an arbitrarily excessive depth
+	if ( depth > 50 )
+	{
+		return -1;
+	}
+	location = libbsdl_end_of_whitespace(line, location);
 	// make sure we have not hit the end of the line (terminal case for recursion)
 	if ( line_length <= location )
 	{
@@ -131,81 +137,72 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	printf("depth %d", depth);
 	printf("\n");
 	depth++;
-	for (; location < line_length - 1; location++)
+	if ( '-' == line[location] && '-' == line[location + 1] )
 	{
-		if ( '-' == line[location] && '-' == line[location + 1] )
+		//this line is most likely a comment
+		//if ( location + 1 <= line_length )
+		printf(" location %d", location);
+		printf(" comment detected\n");
+		printf("\n");
+		return 0;
+	} else
+	if ( ':' == line[location] )
+	{
+		printf(" location %d", location);
+		if ( '=' == line[location + 1] )
 		{
-			//this line is most likely a comment
-			//if ( location + 1 <= line_length )
-			printf(" location %d", location);
-			printf(" comment detected\n");
-			printf("\n");
-			return 0;
+			printf(" := (equivilence) \n");
 		} else
-		if ( ':' == line[location] )
 		{
-			printf(" location %d", location);
-			if ( '=' == line[location + 1] )
-			{
-				printf(" := (equivilence) \n");
-			} else
-			{
-				printf(" : (assignment of) \n");
-			}
-			location++;
-			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-			return 0;
-		} else
-		if ( '"' == line[location] )
-		{
-			mode = 'd';
-			// look ahead for second quote mark and copy bulk then go to that location + 1
-			printf(" location %d", location);
-			printf(" start of string found\n");
-			location++;
-			location = libbsdl_line_search_char(line, location, '"');
-			printf(" location %d", location);
-			printf(" end of string found\n");
-			location++;
-			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-			return 0;
-		} else
-		if ( 'd' != mode )
-		{
-			for (word_number = 0; word_number < WORD_COUNT; word_number++)	
-			{	
-				if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
-				{
-					printf(" location %d", location);
-					printf(" word %s", words[word_number]);
-					printf("\n");
-					location += strlen(words[word_number]);
-					return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-					return 0;
-					// call this function again
-					word_number = WORD_COUNT + 1;
-				}
-			}
-			if ( ';' == line[location] )
-			{
-				//mode = 'u';
-				printf(" location %d", location);
-				printf(" end of words\n");
-				location++;
-				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-				return 0;
-			}
+			printf(" : (assignment of) \n");
 		}
+	} else
+	if ( '"' == line[location] )
+	{
+		mode = '"';
+		// look ahead for second quote mark and copy bulk then go to that location + 1
+		printf(" location %d", location);
+		printf(" string open\n");
+		location++;
+		location = libbsdl_line_search_char(line, location, '"');
+		printf(" location %d", location);
+		printf(" string closed\n");
+	} else
+	if ( '"' == mode )
+	{
+		if ( ';' == line[location] )
+		{       
+			printf(" location %d", location);
+			printf(" string end\n");
+			mode = 'w';
+		}       
 		if ( '&' == line[location] )
-		{
+		{       
 			printf(" location %d", location);
 			printf(" more string left\n");
-			// this is were we call recurse
-			location++;
-			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-			return 0;
+		}
+	} else
+	if ( 'd' != mode )
+	{
+		if ( ';' == line[location] )
+		{       
+			printf(" location %d", location);
+			printf(" end of words\n");
+		} else
+		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
+		{	
+			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
+			{
+				printf(" location %d", location);
+				printf(" word %s", words[word_number]);
+				printf("\n");
+				//location += strlen(words[word_number]);
+				word_number = WORD_COUNT + 1;
+			}
 		}
 	}
+	location++;
+	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
 	return 0;
 }
 
@@ -232,6 +229,23 @@ int libbsdl_offset_is_word(char line[], char word[], unsigned int offset)
 	}
 	return 0;
 }
+
+/*
+ * Skip white space. It pretty much is what it says.
+ *
+ */
+int libbsdl_end_of_whitespace(char line[], unsigned int number)
+{
+	unsigned int current_location;
+	unsigned int length;
+	length = strlen(line);
+	while ( ( number < length ) && ( 0 > libbsdl_is_whitespace(line, number) ) )
+	{
+		number++;
+	}
+	return number;
+}
+
 
 /*
  * The following is just to test if a character in a string is whitespace.
