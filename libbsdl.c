@@ -38,6 +38,9 @@
 #define WORD_COUNT 15
 #define WORD_LENGTH_MAX 10
 
+// if the preprocessor is recursive but if it shall only be allowed 50 recursions (arbitrary but reasonable)
+#define PREPROCESSOR_DEPTH 50
+
 struct bsdl_node
 {
 	struct bsdl_node *next;
@@ -124,16 +127,16 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	char comment[2] = {"--"};
 	unsigned int marker = 0;
 	// fail if we exit after an arbitrarily excessive depth
-	if ( depth > 50 )
+	if ( depth > PREPROCESSOR_DEPTH )
 	{
 		return -1;
 	}
-	location = libbsdl_end_of_whitespace(line, location);
 	// make sure we have not hit the end of the line (terminal case for recursion)
 	if ( line_length <= location )
 	{
 		return 0;
 	}
+	location = libbsdl_end_of_whitespace(line, location);
 	printf("depth %d", depth);
 	printf("\n");
 	depth++;
@@ -196,8 +199,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 				printf(" location %d", location);
 				printf(" word %s", words[word_number]);
 				printf("\n");
-				//location += strlen(words[word_number]);
-				word_number = WORD_COUNT + 1;
+				location += strlen(words[word_number]);
+				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+				return 0;
 			}
 		}
 	}
@@ -236,10 +240,9 @@ int libbsdl_offset_is_word(char line[], char word[], unsigned int offset)
  */
 int libbsdl_end_of_whitespace(char line[], unsigned int number)
 {
-	unsigned int current_location;
 	unsigned int length;
 	length = strlen(line);
-	while ( ( number < length ) && ( 0 > libbsdl_is_whitespace(line, number) ) )
+	while ( ( number < length ) && ( 0 < libbsdl_is_whitespace(line, number) ) )
 	{
 		number++;
 	}
