@@ -123,7 +123,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
 	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
-	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "port\0", "type\0", "subtype\0", "package\0", "end\0"};
+	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"port\0", "string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "type\0", "subtype\0", "package\0", "end\0"};
 	char comment[2] = {"--"};
 	unsigned int marker = 0;
 	// fail if we exit after an arbitrarily excessive depth
@@ -140,18 +140,17 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	printf("depth %d", depth);
 	printf("\n");
 	depth++;
+	printf(" location %d", location);
 	if ( '-' == line[location] && '-' == line[location + 1] )
 	{
 		//this line is most likely a comment
 		//if ( location + 1 <= line_length )
-		printf(" location %d", location);
 		printf(" comment detected\n");
 		printf("\n");
 		return 0;
 	} else
 	if ( ':' == line[location] )
 	{
-		printf(" location %d", location);
 		if ( '=' == line[location + 1] )
 		{
 			printf(" := (equivilence) \n");
@@ -164,7 +163,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		mode = '"';
 		// look ahead for second quote mark and copy bulk then go to that location + 1
-		printf(" location %d", location);
 		printf(" string open\n");
 		location++;
 		location = libbsdl_line_search_char(line, location, '"');
@@ -175,35 +173,42 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		if ( ';' == line[location] )
 		{       
-			printf(" location %d", location);
 			printf(" string end\n");
 			mode = 'w';
 		}       
 		if ( '&' == line[location] )
 		{       
-			printf(" location %d", location);
 			printf(" more string left\n");
 		}
 	} else
-	if ( 'd' != mode )
+	if ( '"' != mode )
 	{
 		if ( ';' == line[location] )
 		{       
-			printf(" location %d", location);
 			printf(" end of words\n");
 		} else
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
 			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
 			{
-				printf(" location %d", location);
 				printf(" word %s", words[word_number]);
 				printf("\n");
 				location += strlen(words[word_number]);
+				if ( word_number == 0)
+				{
+					mode = 'p';
+					printf(" found a port changing modes \n");
+				}
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
 				return 0;
 			}
 		}
+		// ok if we are down here it is not a symbol, comment or in the word list
+//		printf(" something started here\n");
+//		location = libbsdl_end_of_word(line, location);
+//		printf(" grabbed something that ends here %d", location);
+//		printf(" \n");
+
 	}
 	location++;
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
@@ -232,6 +237,24 @@ int libbsdl_offset_is_word(char line[], char word[], unsigned int offset)
 		}
 	}
 	return 0;
+}
+
+/* 
+ * This function returns the location for the end of the word you are on.
+ *
+ */
+int libbsdl_end_of_word(char line[], unsigned int offset)
+{
+	unsigned int length;
+	length = strlen(line);
+	while ( ( offset < length ) && ( ( 'a' <= line[offset] && 'z' >= line[offset] ) || ( 'A' <= line[offset] && 'Z' >= line[offset] ) || '_' == line[offset] || '.' == line[offset] ) )
+	{
+		printf("counting, %d", offset);
+		printf("\n");
+		offset++;
+	}
+//	offset--;
+	return offset;
 }
 
 /*
