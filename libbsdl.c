@@ -126,17 +126,20 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"port\0", "string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "type\0", "subtype\0", "package\0", "end\0"};
 	char comment[2] = {"--"};
 	unsigned int marker = 0;
+	// for testing purposes
+	char out[50];
 	// fail if we exit after an arbitrarily excessive depth
 	if ( depth > PREPROCESSOR_DEPTH )
 	{
 		return -1;
 	}
+	location = libbsdl_end_of_whitespace(line, location);
 	// make sure we have not hit the end of the line (terminal case for recursion)
 	if ( line_length <= location )
 	{
 		return 0;
 	}
-	location = libbsdl_end_of_whitespace(line, location);
+//	location = libbsdl_end_of_whitespace(line, location);
 	printf("depth %d", depth);
 	printf("\n");
 	depth++;
@@ -186,6 +189,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		if ( ';' == line[location] )
 		{       
 			printf(" end of words\n");
+			location++;
+			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+			return 0;
 		} else
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
@@ -195,8 +201,8 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 				printf("\n");
 				location += strlen(words[word_number]);
 				if ( word_number == 0)
-				{
-					mode = 'p';
+				{	//to be enabled later
+					//mode = 'p';
 					printf(" found a port changing modes \n");
 				}
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
@@ -204,17 +210,39 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			}
 		}
 		// ok if we are down here it is not a symbol, comment or in the word list
-//		printf(" something started here\n");
-//		location = libbsdl_end_of_word(line, location);
-//		printf(" grabbed something that ends here %d", location);
-//		printf(" \n");
-
+		marker = location;
+		location = libbsdl_end_of_word(line, location);
+		if ( marker != ( location + 1 ))
+		{
+			strncpy(out, &(line[marker]), (location - marker +1));
+			out[( location - marker +1)] = '\0';
+			printf(" something from the line : %s", out);
+			printf("\n");
+			printf(" is this many characters long %d", (location-marker));
+			printf("\n");
+		} else 									// *******************this condition should be blocked by the recursion's safeties at the start. 
+		{
+			return 0;
+		}
+	} else
+	if ( 'p' == mode )
+	{
+		
 	}
 	location++;
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
 	return 0;
 }
 
+int libbsdl_parentheses_ballance(char line[], int offset, int end)
+{
+	return 0;
+}
+
+int libbasl_comment_offset(char line[], int offset)
+{
+	return 0;
+}
 
 /* 
  * This function tests for a word in a line of text in a specific location with case insenitivity.
@@ -225,7 +253,7 @@ int libbsdl_offset_is_word(char line[], char word[], unsigned int offset)
 {
 	unsigned int word_length = 0;
 	word_length = strlen(word);
-	if ( offset > (word_length - 1) && 1 != libbsdl_is_whitespace(line, (offset - 1) ) )
+	if ( offset > (word_length - 1) && ( 1 != libbsdl_is_whitespace(line, (offset - 1) ) ) )
 	{
 		return 0;
 	}
@@ -243,19 +271,22 @@ int libbsdl_offset_is_word(char line[], char word[], unsigned int offset)
  * This function returns the location for the end of the word you are on.
  *
  */
-int libbsdl_end_of_word(char line[], unsigned int offset)
+int libbsdl_end_of_word(char line[], int offset)
 {
 	unsigned int length;
 	length = strlen(line);
-	while ( ( offset < length ) && ( ( 'a' <= line[offset] && 'z' >= line[offset] ) || ( 'A' <= line[offset] && 'Z' >= line[offset] ) || '_' == line[offset] || '.' == line[offset] ) )
+	while ( ( offset <= length ) && ( ( 'A' <= (line[offset]) && 'Z' >= (line[offset]) ) || ( 'a' <= (line[offset]) && 'z' >= (line[offset]) ) || ( '0' <= (line[offset]) && '9' >= (line[offset]) ) || ( '_' == (line[offset])) || ( '.' == (line[offset])) ) )
 	{
-		printf("counting, %d", offset);
-		printf("\n");
 		offset++;
 	}
-//	offset--;
+	offset--;
 	return offset;
 }
+
+/*
+char libbsdl_offset_is_letter()
+
+*/
 
 /*
  * Skip white space. It pretty much is what it says.
@@ -288,7 +319,7 @@ int libbsdl_is_whitespace(char line[], unsigned int number)
 	{
 		return 0;
 	}
-	if ( line[number] == ascii_space || line[number] == ascii_tab || line[number] == ascii_newline || line[number] == ascii_terminate )
+	if ( line[number] == ascii_space || line[number] == ascii_tab  || line[number] == ascii_newline || line[number] == ascii_terminate )
 	{
 		return 1;
 	}
