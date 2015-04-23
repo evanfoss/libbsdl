@@ -191,7 +191,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			printf(" end of words\n");
 			location++;
 			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-			return 0;
 		} else
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
@@ -206,7 +205,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 					printf(" found a port changing modes \n");
 				}
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-				return 0;
 			}
 		}
 		// ok if we are down here it is not a symbol, comment or in the word list
@@ -227,16 +225,35 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	} else
 	if ( 'p' == mode )
 	{
-		
+		// count perenthesis if count is balananced delcare end of the port
 	}
 	location++;
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
-	return 0;
 }
 
 int libbsdl_parentheses_ballance(char line[], int offset, int end)
 {
-	return 0;
+	int count = 0;
+	unsigned int length;
+	int location;
+	length = strlen(line);
+	if ( 0 >= length || 0 >= offset )
+	{
+		return 0;
+	}
+	for (location = offset; length >= location; location++)
+	{
+		
+		if ( '(' == line[location] )
+		{
+			count++;
+		} else
+		if ( ')' == line[location] )
+		{
+			count--;
+		}
+	}
+	return count;
 }
 
 int libbasl_comment_offset(char line[], int offset)
