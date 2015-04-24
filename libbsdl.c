@@ -89,6 +89,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	// how many ( marks have we seen?
 	unsigned int depth = 0;
 	char mode = 'w';
+	int parentheses = 0;
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
@@ -96,7 +97,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 		printf("\n");
 		printf("%s", line);
 		printf("\n");
-		libbsdl_line_preprocessor(read, line, count, location, mode, depth);
+		libbsdl_line_preprocessor(read, line, count, location, mode, parentheses, depth);
 		count++;
 	}
 	printf("\n");
@@ -118,13 +119,12 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  *
  *
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char mode, unsigned int depth)
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char mode, int parentheses, unsigned int depth)
 {
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
 	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"port\0", "string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "type\0", "subtype\0", "package\0", "end\0"};
-	char comment[2] = {"--"};
 	unsigned int marker = 0;
 	// for testing purposes
 	char out[50];
@@ -172,6 +172,16 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		printf(" location %d", location);
 		printf(" string closed\n");
 	} else
+	if ( 'p' == mode )
+	{
+		// I need to work out how the end is found.
+		//parentheses =+ libbsdl_parentheses_ballance(line, location, end);
+		if ( 0 = parentheses )
+		{
+			printf(" exiting port mode\n");
+			mode = 'w';
+		}
+	}
 	if ( '"' == mode )
 	{
 		if ( ';' == line[location] )
@@ -190,7 +200,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		{       
 			printf(" end of words\n");
 			location++;
-			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 		} else
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
@@ -201,10 +211,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 				location += strlen(words[word_number]);
 				if ( word_number == 0)
 				{	//to be enabled later
-					//mode = 'p';
+					mode = 'p';
 					printf(" found a port changing modes \n");
 				}
-				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 			}
 		}
 		// ok if we are down here it is not a symbol, comment or in the word list
@@ -222,13 +232,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		{
 			return 0;
 		}
-	} else
-	if ( 'p' == mode )
-	{
-		// count perenthesis if count is balananced delcare end of the port
 	}
 	location++;
-	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, depth);
+	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
 
 int libbsdl_parentheses_ballance(char line[], int offset, int end)
