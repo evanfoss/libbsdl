@@ -93,7 +93,13 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
-		location = 0;
+	/*	if ( )
+		{
+			count--;
+		} else
+	*/	{
+			location = 0;
+		}
 		printf("\n");
 		printf("%s", line);
 		printf("\n");
@@ -139,7 +145,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		return 0;
 	}
-//	location = libbsdl_end_of_whitespace(line, location);
 	printf("depth %d", depth);
 	printf("\n");
 	depth++;
@@ -172,36 +177,43 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		printf(" location %d", location);
 		printf(" string closed\n");
 	} else
+	if ( ';' == line[location] )
+	{
+		printf(" end of words\n");
+		// do something here to set the carry mode back to zero
+	} else
 	if ( 'p' == mode )
 	{
 		// I need to work out how the end is found.
 		//parentheses =+ libbsdl_parentheses_ballance(line, location, end);
-		if ( 0 = parentheses )
+		if ( 0 == parentheses )
 		{
 			printf(" exiting port mode\n");
-			mode = 'w';
+		//	mode = 'w';
 		}
-	}
+	} else
+	if ( '(' == line[location] )
+	{
+		printf(" ( grouping started \n");
+	} else
+	if ( ')' == line[location] )
+	{
+		printf(" ) grouping ended \n");
+	} else
+	if ( ',' == line[location] )
+	{
+		printf(" , another value listed\n");
+	} else
 	if ( '"' == mode )
 	{
-		if ( ';' == line[location] )
-		{       
-			printf(" string end\n");
-			mode = 'w';
-		}       
 		if ( '&' == line[location] )
 		{       
 			printf(" more string left\n");
+			// hold depth
 		}
 	} else
-	if ( '"' != mode )
+	if ( '"' != mode || 'p' != mode )
 	{
-		if ( ';' == line[location] )
-		{       
-			printf(" end of words\n");
-			location++;
-			return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
-		} else
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
 			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
@@ -228,7 +240,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			printf("\n");
 			printf(" is this many characters long %d", (location-marker));
 			printf("\n");
-		} else 									// *******************this condition should be blocked by the recursion's safeties at the start. 
+		} else
 		{
 			return 0;
 		}
