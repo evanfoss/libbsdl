@@ -162,6 +162,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		if ( '=' == line[location + 1] )
 		{
 			printf(" := (equivilence) \n");
+			location++;
 		} else
 		{
 			printf(" : (assignment of) \n");
@@ -204,12 +205,15 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		printf(" , another value listed\n");
 	} else
-	if ( '"' == mode )
+	if ( '&' == line[location] )
 	{
-		if ( '&' == line[location] )
-		{       
+		if ( '"' == mode )
+		{
 			printf(" more string left\n");
-			// hold depth
+			//hold depth
+		} else
+		{
+			//damn syntax error
 		}
 	} else
 	if ( '"' != mode || 'p' != mode )
@@ -241,7 +245,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			printf(" is this many characters long %d", (location-marker));
 			printf("\n");
 		} else
-		{
+		{	// odds are high we just hit a symbol that is not supposed to be here but lets catch it any way
 			return 0;
 		}
 	}
