@@ -249,6 +249,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			return 0;
 		}
 	}
+	// after i fix the code to write what it finds out this next line should be replaced with skipping the found texts length
 	location++;
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
