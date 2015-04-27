@@ -151,11 +151,18 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	printf(" location %d", location);
 	if ( '-' == line[location] && '-' == line[location + 1] )
 	{
-		//this line is most likely a comment
-		//if ( location + 1 <= line_length )
-		printf(" comment detected\n");
-		printf("\n");
-		return 0;
+		if ( '-' == line[location + 1] )
+		{
+			printf(" comment detected\n");
+			return 0;
+		} else
+		{
+			printf(" subtraction \n");
+		}
+	} else
+	if ( '+' == line[location] )
+	{// I am including addition because I had to include basically all the other operations any way.
+		printf(" addition\n");
 	} else
 	if ( ':' == line[location] )
 	{
@@ -190,7 +197,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		if ( 0 == parentheses )
 		{
 			printf(" exiting port mode\n");
-		//	mode = 'w';
+			mode = 'w';
 		}
 	} else
 	if ( '(' == line[location] )
@@ -204,6 +211,54 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	if ( ',' == line[location] )
 	{
 		printf(" , another value listed\n");
+	} else
+	if ( '=' == line[location] )
+	{
+		if ( '>' == line[location + 1] )
+		{
+			printf(" >= more than or equal too\n");
+		} else
+		if ( '<' == line[location + 1] )
+		{
+			printf(" <= less than or equal too\n");
+		} else
+		{
+			printf(" = equal too\n");
+		}
+	} else
+	if ( '\\' == line[location] )
+	{
+		if ( '=' == line[location + 1] )
+		{
+			printf(" \\= not equal too\n");
+		} else
+		{
+			printf(" \\ divided by\n");
+		}
+	} else
+	if ( '\'' == line[location] )
+	{
+		if ( '\\' == line[location + 1] && '\'' == line[location + 3] )
+		{
+			printf(" ascii character (special) found\n");
+		} else
+		if ( '\\' != line[location + 1] && '\'' == line[location + 2] )
+		{
+			printf(" ascii character value found\n");
+		} else
+		{
+			printf(" syntax error\n");
+		}
+	} else
+	if ( '*' == line[location] )
+	{
+		if ( '*' == line[location + 1])
+		{
+			printf(" ** exponentiation \n");
+		} else
+		{
+			printf(" * multiplication \n");
+		}
 	} else
 	if ( '&' == line[location] )
 	{

@@ -1,0 +1,24 @@
+This list omitts '&' which is used 
+
++
+-
+**
+*
+/
+mod
+rem
+abs
+not
+sll
+srl
+sla
+sra
+rol
+ror
+and
+or
+not
+nand
+nor
+xor
+xnor
