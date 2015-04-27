@@ -149,7 +149,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	printf("\n");
 	depth++;
 	printf(" location %d", location);
-	if ( '-' == line[location] && '-' == line[location + 1] )
+	if ( '-' == line[location] )
 	{
 		if ( '-' == line[location + 1] )
 		{
