@@ -300,6 +300,116 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
 
+int libbsdl_preprocessor_specialcharid(char line[], int location)
+{
+	switch ( line[location] )
+	{
+		case '-':
+			if ( '-' == line[location + 1] )
+			{
+				printf(" comment detected\n");
+				return 0;
+			} else
+			{
+				printf(" subtraction\n");
+			}
+			break;
+		case '+':
+			printf(" addition\n");
+			break;
+		case '"':
+			mode = '"';
+			printf(" string open\n");
+			// look ahead for second quote mark and copy bulk then go to that location + 1
+			location++;
+			location = libbsdl_line_search_char(line, location, '"');
+			printf(" location %d", location);
+			printf(" string closed\n");
+			break;
+		case ';':
+			printf(" end of words\n");
+			break;
+		case ':':
+			if ( '=' == line[location + 1] )
+			{
+				printf(" := (equivilence) \n");
+				location++;
+			} else
+			{
+				printf(" : (assignment of)\n");
+			}
+			break;
+		case '=':
+			if ( '>' == line[location + 1] )
+			{
+				printf(" >= more than or equal too\n");
+			} else
+			if ( '<' == line[location + 1] )
+			{
+				printf(" <= less than or equal too\n");
+			} else
+			{
+				printf(" = equal too\n");
+			}
+			break;
+		case '(':
+			printf(" ( grouping started \n");
+			break;
+		case ')':
+			printf(" ) grouping ended \n");
+			break;
+		case ',':
+			printf(" , another value listed\n");
+			break;
+		case '\\':
+			if ( '=' == line[location + 1] )
+			{
+				printf(" \\= not equal too\n");
+			} else
+			{
+				printf(" \\ divided by\n");
+			}
+			break;
+		case '\'':
+			if ( '\\' == line[location + 1] && '\'' == line[location + 3] )
+			{
+				printf(" ascii character (special) found\n");
+			} else
+			if ( '\\' != line[location + 1] && '\'' == line[location + 2] )
+			{
+				printf(" ascii character value found\n");
+			} else
+			{
+				printf(" syntax error\n");
+			}
+			break;
+		case '*':
+			if ( '*' == line[location + 1])
+			{
+				printf(" ** exponentiation \n");
+			} else
+			{
+				printf(" * multiplication \n");
+			}
+			break;
+		case '&':
+			if ( '"' == mode )
+			{
+				printf(" more string left\n");
+				//hold depth
+			} else
+			{
+				printf(" concatenation \n");
+			}
+			break;
+		default:
+			return 0;
+			break;
+	}
+	// it is technically impossible to get down here but I feel safer with this.
+	return 0;
+}
+
 int libbsdl_parentheses_ballance(char line[], int offset, int end)
 {
 	int count = 0;
