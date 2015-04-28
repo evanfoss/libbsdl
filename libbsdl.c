@@ -175,6 +175,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			marker = libbsdl_line_search_char(line, marker, '"');
 			printf(" location %d", marker);
 			printf(" string closed\n");
+			marker++;
 			break;
 		case ';':
 			printf(" end of words\n");
