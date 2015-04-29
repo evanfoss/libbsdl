@@ -318,10 +318,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		marker = libbsdl_end_of_word(line, location);
 		if ( location != ( marker + 1 ))
 		{
-			strncpy(out, &(line[location]), (marker - location +1));
-			out[( marker - location + 1 )] = '\0';
-			printf(" something from the line : %s", out);
-			printf("\n");
 			printf(" is this many characters long %d", (marker - location + 1));
 			printf("\n");
 			marker++;
@@ -331,6 +327,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		}
 	}
 	// after i fix the code to write what it finds out this next line should be replaced with skipping the found texts length
+	strncpy(out, &(line[location]), (marker - location ));
+	out[( marker - location  )] = '\0';
+	printf(" output : %s", out);
+	printf("\n");
 	location = marker;
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
