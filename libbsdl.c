@@ -248,6 +248,7 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 			{
 				printf(" end of words\n");
 			}
+			marker++;
 			break;
 		case ':':
 			if ( '=' == line[location + 1] )
