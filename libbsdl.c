@@ -139,14 +139,13 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		return 0;
 	}
-	printf("depth %d", depth);
+/*	printf("depth %d", depth);
 	printf("\n");
-	depth++;
 	printf(" location %d", location);
 	printf("\n");
-//	printf(" mode %c", *mode);
-//	printf("\n");
-	marker = location;
+	printf(" mode %c", *mode);
+	printf("\n");
+*/	marker = location;
 	switch ( line[location] )
 	{
 		case '-':
@@ -178,10 +177,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			if ( '"' == *mode )
 			{
 				printf(" end of string\n");
+				*mode = 'w';
 			} else
 			{
 				printf(" end of words\n");
-				//*mode = 'w';
 			}
 			break;
 		case ':':
@@ -311,6 +310,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 					*mode = 'p';
 					printf(" found a port changing modes \n");
 				}
+				depth++;
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 			}
 		}
@@ -332,6 +332,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	printf(" output : %s", out);
 	printf("\n");
 	location = marker;
+	depth++;
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
 
