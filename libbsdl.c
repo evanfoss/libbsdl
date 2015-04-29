@@ -93,17 +93,11 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
-	/*	if ( )
-		{
-			count--;
-		} else
-	*/	{
-			location = 0;
-		}
+		location = 0;
 		printf("\n");
 		printf("%s", line);
 		printf("\n");
-		libbsdl_line_preprocessor(read, line, count, location, mode, parentheses, depth);
+		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
 		count++;
 	}
 	printf("\n");
@@ -125,7 +119,7 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  *
  *
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char mode, int parentheses, unsigned int depth)
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth)
 {
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
@@ -149,6 +143,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	printf("\n");
 	depth++;
 	printf(" location %d", location);
+	printf("\n");
+//	printf(" mode %c", *mode);
+//	printf("\n");
 	marker = location;
 	switch ( line[location] )
 	{
@@ -168,7 +165,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			printf(" addition\n");
 			break;
 		case '"':
-			mode = '"';
+			*mode = '"';
 			printf(" string open\n");
 			// look ahead for second quote mark and copy bulk then go to that location + 1
 			marker++;
@@ -178,7 +175,14 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			marker++;
 			break;
 		case ';':
-			printf(" end of words\n");
+			if ( '"' == *mode )
+			{
+				printf(" end of string\n");
+			} else
+			{
+				printf(" end of words\n");
+				//*mode = 'w';
+			}
 			break;
 		case ':':
 			if ( '=' == line[location + 1] )
@@ -209,11 +213,17 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			break;
 		case '(':
 			marker++;
+			(*parentheses)++;
 			printf(" ( grouping started \n");
+			printf(" parentheses count %d", *parentheses);
+			printf("\n");
 			break;
 		case ')':
 			marker++;
+			(*parentheses)--;
 			printf(" ) grouping ended \n");
+			printf(" parentheses count %d", *parentheses);
+			printf("\n");
 			break;
 		case ',':
 			marker++;
@@ -258,7 +268,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			}
 			break;
 		case '&':
-			if ( '"' == mode )
+			if ( '"' == *mode )
 			{
 				marker++;
 				printf(" more string left\n");
@@ -277,17 +287,17 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	//if (above > 0)
 	//recurse
 	//else continue
-	if ( 'p' == mode && marker == location )
+	if ( 'p' == *mode )
 	{
 		// I need to work out how the end is found.
 		//parentheses =+ libbsdl_parentheses_ballance(line, location, end);
-		if ( 0 == parentheses )
+		if ( 0 == (*parentheses) )
 		{
 			printf(" exiting port mode\n");
-			mode = 'w';
+			(*mode) = 'w';
 		}
-	} else
-	if ( marker == location && ( '"' != mode || 'p' != mode ) )
+	} 
+	if ( marker == location )// && 'p' != *mode  )
 	{
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
@@ -298,7 +308,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 				location += strlen(words[word_number]);
 				if ( word_number == 0)
 				{	//to be enabled later
-					//mode = 'p';
+					*mode = 'p';
 					printf(" found a port changing modes \n");
 				}
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
@@ -309,10 +319,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		if ( location != ( marker + 1 ))
 		{
 			strncpy(out, &(line[location]), (marker - location +1));
-			out[( marker - location +1)] = '\0';
+			out[( marker - location + 1 )] = '\0';
 			printf(" something from the line : %s", out);
 			printf("\n");
-			printf(" is this many characters long %d", (marker-location));
+			printf(" is this many characters long %d", (marker - location + 1));
 			printf("\n");
 			marker++;
 		} else
