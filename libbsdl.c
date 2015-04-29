@@ -133,6 +133,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		return -1;
 	}
+	if ( 'c' == *mode )
+	{
+		*mode = 'w';
+	}
 	location = libbsdl_end_of_whitespace(line, location);
 	// make sure we have not hit the end of the line (terminal case for recursion)
 	if ( line_length <= location )
@@ -146,13 +150,75 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	printf(" mode %c", *mode);
 	printf("\n");
 */	marker = location;
+	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses);
+	//if (above > 0)
+	//recurse
+	//else continue
+	if ( 'p' == *mode )
+	{
+		// I need to work out how the end is found.
+		//parentheses =+ libbsdl_parentheses_ballance(line, location, end);
+		if ( 0 == (*parentheses) )
+		{
+			printf(" exiting port mode\n");
+			(*mode) = 'w';
+		}
+	} else
+	if ( 'c' == *mode )
+	{
+		return 0;
+	}
+	if ( marker == location )// && 'p' != *mode  )
+	{
+		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
+		{	
+			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
+			{
+				printf(" found word %s", words[word_number]);
+				printf("\n");
+				location += strlen(words[word_number]);
+				if ( word_number == 0)
+				{	//to be enabled later
+					*mode = 'p';
+					printf(" found a port changing modes \n");
+				}
+				depth++;
+				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
+			}
+		}
+		// ok if we are down here it is not a symbol, comment or in the word list
+		marker = libbsdl_end_of_word(line, location);
+		if ( location != ( marker + 1 ))
+		{
+			printf(" is this many characters long %d", (marker - location + 1));
+			printf("\n");
+			marker++;
+		} else
+		{	// odds are high we just hit a symbol that is not supposed to be here but lets catch it any way
+			return 0;
+		}
+	}
+	// after i fix the code to write what it finds out this next line should be replaced with skipping the found texts length
+	strncpy(out, &(line[location]), (marker - location ));
+	out[( marker - location  )] = '\0';
+	printf(" output : %s", out);
+	printf("\n");
+	location = marker;
+	depth++;
+	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
+}
+
+int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parentheses)
+{
+	int marker;
+	marker = location;
 	switch ( line[location] )
 	{
 		case '-':
 			if ( '-' == line[location + 1] )
 			{
 				printf(" comment detected\n");
-				return 0;
+				*mode = 'c';
 			} else
 			{
 				marker++;
@@ -282,168 +348,8 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			marker = location;
 			break;
 	}
-	//libbsdl_preprocessor_specialcharid(char line[], int location, char mode)
-	//if (above > 0)
-	//recurse
-	//else continue
-	if ( 'p' == *mode )
-	{
-		// I need to work out how the end is found.
-		//parentheses =+ libbsdl_parentheses_ballance(line, location, end);
-		if ( 0 == (*parentheses) )
-		{
-			printf(" exiting port mode\n");
-			(*mode) = 'w';
-		}
-	} 
-	if ( marker == location )// && 'p' != *mode  )
-	{
-		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
-		{	
-			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
-			{
-				printf(" word %s", words[word_number]);
-				printf("\n");
-				location += strlen(words[word_number]);
-				if ( word_number == 0)
-				{	//to be enabled later
-					*mode = 'p';
-					printf(" found a port changing modes \n");
-				}
-				depth++;
-				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
-			}
-		}
-		// ok if we are down here it is not a symbol, comment or in the word list
-		marker = libbsdl_end_of_word(line, location);
-		if ( location != ( marker + 1 ))
-		{
-			printf(" is this many characters long %d", (marker - location + 1));
-			printf("\n");
-			marker++;
-		} else
-		{	// odds are high we just hit a symbol that is not supposed to be here but lets catch it any way
-			return 0;
-		}
-	}
-	// after i fix the code to write what it finds out this next line should be replaced with skipping the found texts length
-	strncpy(out, &(line[location]), (marker - location ));
-	out[( marker - location  )] = '\0';
-	printf(" output : %s", out);
-	printf("\n");
-	location = marker;
-	depth++;
-	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
-}
-
-int libbsdl_preprocessor_specialcharid(char line[], int location, char mode)
-{
-	switch ( line[location] )
-	{
-		case '-':
-			if ( '-' == line[location + 1] )
-			{
-				printf(" comment detected\n");
-				return 0;
-			} else
-			{
-				printf(" subtraction\n");
-			}
-			break;
-		case '+':
-			printf(" addition\n");
-			break;
-		case '"':
-			mode = '"';
-			printf(" string open\n");
-			// look ahead for second quote mark and copy bulk then go to that location + 1
-			location++;
-			location = libbsdl_line_search_char(line, location, '"');
-			printf(" location %d", location);
-			printf(" string closed\n");
-			break;
-		case ';':
-			printf(" end of words\n");
-			break;
-		case ':':
-			if ( '=' == line[location + 1] )
-			{
-				printf(" := (equivilence) \n");
-				location++;
-			} else
-			{
-				printf(" : (assignment of)\n");
-			}
-			break;
-		case '=':
-			if ( '>' == line[location + 1] )
-			{
-				printf(" >= more than or equal too\n");
-			} else
-			if ( '<' == line[location + 1] )
-			{
-				printf(" <= less than or equal too\n");
-			} else
-			{
-				printf(" = equal too\n");
-			}
-			break;
-		case '(':
-			printf(" ( grouping started \n");
-			break;
-		case ')':
-			printf(" ) grouping ended \n");
-			break;
-		case ',':
-			printf(" , another value listed\n");
-			break;
-		case '\\':
-			if ( '=' == line[location + 1] )
-			{
-				printf(" \\= not equal too\n");
-			} else
-			{
-				printf(" \\ divided by\n");
-			}
-			break;
-		case '\'':
-			if ( '\\' == line[location + 1] && '\'' == line[location + 3] )
-			{
-				printf(" ascii character (special) found\n");
-			} else
-			if ( '\\' != line[location + 1] && '\'' == line[location + 2] )
-			{
-				printf(" ascii character value found\n");
-			} else
-			{
-				printf(" syntax error\n");
-			}
-			break;
-		case '*':
-			if ( '*' == line[location + 1])
-			{
-				printf(" ** exponentiation \n");
-			} else
-			{
-				printf(" * multiplication \n");
-			}
-			break;
-		case '&':
-			if ( '"' == mode )
-			{
-				printf(" more string left\n");
-				//hold depth
-			} else
-			{
-				printf(" concatenation \n");
-			}
-			break;
-		default:
-			return 0;
-			break;
-	}
 	// it is technically impossible to get down here but I feel safer with this.
-	return 0;
+	return marker;
 }
 
 int libbsdl_parentheses_ballance(char line[], int offset, int end)
