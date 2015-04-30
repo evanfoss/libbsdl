@@ -97,6 +97,8 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 		printf("\n");
 		printf("%s", line);
 		printf("\n");
+//		printf(" mode %c", *mode);
+//		printf("\n");
 		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
 		count++;
 	}
@@ -143,17 +145,8 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		return 0;
 	}
-/*	printf("depth %d", depth);
-	printf("\n");
-	printf(" location %d", location);
-	printf("\n");
-	printf(" mode %c", *mode);
-	printf("\n");
-*/	marker = location;
+	marker = location;
 	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses);
-	//if (above > 0)
-	//recurse
-	//else continue
 	if ( 'p' == *mode )
 	{
 		// I need to work out how the end is found.
@@ -166,9 +159,14 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	} else
 	if ( 'c' == *mode )
 	{
+		*mode = 'w';
 		return 0;
+	} else
+	if ( ';' == *mode)
+	{
+		return marker;
 	}
-	if ( marker == location )// && 'p' != *mode  )
+	if ( marker == location )
 	{
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
@@ -190,8 +188,8 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		marker = libbsdl_end_of_word(line, location);
 		if ( location != ( marker + 1 ))
 		{
-			printf(" is this many characters long %d", (marker - location + 1));
-			printf("\n");
+//			printf(" is this many characters long %d", (marker - location + 1));
+//			printf("\n");
 			marker++;
 		} else
 		{	// odds are high we just hit a symbol that is not supposed to be here but lets catch it any way
@@ -247,6 +245,7 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 			} else
 			{
 				printf(" end of words\n");
+				*mode = ';';
 			}
 			marker++;
 			break;
