@@ -121,7 +121,7 @@ void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
  *
  *
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth)
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth) //, char *request_vnode)
 {
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
@@ -134,10 +134,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	if ( depth > PREPROCESSOR_DEPTH )
 	{
 		return -1;
-	}
-	if ( 'c' == *mode )
-	{
-		*mode = 'w';
 	}
 	location = libbsdl_end_of_whitespace(line, location);
 	// make sure we have not hit the end of the line (terminal case for recursion)
@@ -162,10 +158,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		*mode = 'w';
 		return 0;
 	} else
-	if ( ';' == *mode)
-	{
-		return marker;
-	}
 	if ( marker == location )
 	{
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
@@ -215,6 +207,7 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 		case '-':
 			if ( '-' == line[location + 1] )
 			{
+				printf("\n");
 				printf(" comment detected\n");
 				*mode = 'c';
 			} else
@@ -238,14 +231,13 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 			marker++;
 			break;
 		case ';':
-			if ( '"' == *mode )
+			printf(" ; (end of words)\n");
+			if ( 'p' == *mode && 0 != *parentheses )
 			{
-				printf(" end of string\n");
-				*mode = 'w';
+				printf("need new vertical subnode\n");
 			} else
 			{
-				printf(" end of words\n");
-				*mode = ';';
+				*mode = 'w';
 			}
 			marker++;
 			break;
