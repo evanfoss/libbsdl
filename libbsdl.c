@@ -100,6 +100,11 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 //		printf(" mode %c", *mode);
 //		printf("\n");
 		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
+		if ( ';' == mode )
+		{
+			mode = 'w';
+			printf("\nNew Sublist\n");
+		}
 		count++;
 	}
 	printf("\n");
@@ -130,6 +135,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	unsigned int marker = 0;
 	// for testing purposes
 	char out[50];
+	char comment = 'n';
 	// fail if we exit after an arbitrarily excessive depth
 	if ( depth > PREPROCESSOR_DEPTH )
 	{
@@ -142,7 +148,12 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		return 0;
 	}
 	marker = location;
-	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses);
+	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses, &comment);
+	if ( 'c' == comment )
+	{
+		marker = strlen(line) - 1;
+		return 0;
+	} else
 	if ( 'p' == *mode )
 	{
 		// I need to work out how the end is found.
@@ -152,12 +163,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			printf(" exiting port mode\n");
 			(*mode) = 'w';
 		}
-	} else
-	if ( 'c' == *mode )
-	{
-		*mode = 'w';
-		return 0;
-	} else
+	}
 	if ( marker == location )
 	{
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
@@ -198,7 +204,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
 
-int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parentheses)
+int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parentheses, char *comment)
 {
 	int marker;
 	marker = location;
@@ -209,7 +215,7 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 			{
 				printf("\n");
 				printf(" comment detected\n");
-				*mode = 'c';
+				*comment = 'y';
 			} else
 			{
 				marker++;
@@ -237,7 +243,7 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 				printf("need new vertical subnode\n");
 			} else
 			{
-				*mode = 'w';
+				//*mode = 'w';
 			}
 			marker++;
 			break;
