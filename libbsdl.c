@@ -164,7 +164,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			(*mode) = 'w';
 		}
 	}
-	if ( marker == location )
+	if ( marker == location && ';' != *mode )
 	{
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
@@ -243,7 +243,7 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 				printf("need new vertical subnode\n");
 			} else
 			{
-				//*mode = 'w';
+				*mode = ';';
 			}
 			marker++;
 			break;

@@ -41,12 +41,6 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	char *ptr = NULL;
-	char test1[30];
-	char test2;
-	ptr = &test1;
-	*(ptr +1) = 'a';
-
 /*	puts("*** test initial comment function ***\n");
 	// this is not what the interface to the library will look
 	// like in the long run but i need to start somewhere
