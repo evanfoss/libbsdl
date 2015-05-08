@@ -149,11 +149,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	}
 	marker = location;
 	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses, &comment);
-	if ( 'c' == comment )
-	{
-		marker = strlen(line) - 1;
-		return 0;
-	} else
 	if ( 'p' == *mode )
 	{
 		// I need to work out how the end is found.
@@ -164,7 +159,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			(*mode) = 'w';
 		}
 	}
-	if ( marker == location && ';' != *mode )
+	if ( marker == location )
 	{
 		for (word_number = 0; word_number < WORD_COUNT; word_number++)	
 		{	
@@ -177,6 +172,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 				{	//to be enabled later
 					*mode = 'p';
 					printf(" found a port changing modes \n");
+				} else 
+				if ( word_number == 6 && depth == 0 )
+				{
+				//	*mode = ';';
 				}
 				depth++;
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
@@ -216,6 +215,7 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 				printf("\n");
 				printf(" comment detected\n");
 				*comment = 'y';
+				marker = strlen(line);
 			} else
 			{
 				marker++;
