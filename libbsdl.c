@@ -175,7 +175,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 				} else 
 				if ( word_number == 6 && depth == 0 )
 				{
-				//	*mode = ';';
+					*mode = ';';
 				}
 				depth++;
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
