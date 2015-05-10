@@ -147,7 +147,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		return 0;
 	}
 	marker = location;
-	marker = libbsdl_preprocessor_specialcharid(line, depth, location, mode, parentheses);
+	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses);
 	if ( 'p' == *mode )
 	{
 		// I need to work out how the end is found.
@@ -202,7 +202,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
 
-int libbsdl_preprocessor_specialcharid(char line[], unsigned int depth, int location, char *mode, int *parentheses)
+int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parentheses)
 {
 	int marker;
 	marker = location;
@@ -214,10 +214,6 @@ int libbsdl_preprocessor_specialcharid(char line[], unsigned int depth, int loca
 				printf("\n");
 				printf(" comment detected\n");
 				marker = strlen(line);
-				if ( 0 == depth )
-				{
-					*mode = ';';
-				}
 			} else
 			{
 				marker++;
