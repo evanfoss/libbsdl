@@ -135,7 +135,6 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	unsigned int marker = 0;
 	// for testing purposes
 	char out[50];
-	char comment = 'n';
 	// fail if we exit after an arbitrarily excessive depth
 	if ( depth > PREPROCESSOR_DEPTH )
 	{
@@ -148,7 +147,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		return 0;
 	}
 	marker = location;
-	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses, &comment);
+	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses);
 	if ( 'p' == *mode )
 	{
 		// I need to work out how the end is found.
@@ -203,7 +202,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
 
-int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parentheses, char *comment)
+int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parentheses)
 {
 	int marker;
 	marker = location;
@@ -214,7 +213,6 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 			{
 				printf("\n");
 				printf(" comment detected\n");
-				*comment = 'y';
 				marker = strlen(line);
 			} else
 			{
@@ -373,11 +371,6 @@ int libbsdl_parentheses_ballance(char line[], int offset, int end)
 		}
 	}
 	return count;
-}
-
-int libbasl_comment_offset(char line[], int offset)
-{
-	return 0;
 }
 
 /* 
