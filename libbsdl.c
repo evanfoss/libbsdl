@@ -25,6 +25,8 @@
 #ifndef LIBBSDL_C_
 #define LIBBSDL_C_
 
+#define LIBBSDL_C_DEBUG
+
 #include <stdio.h>
 /* When I first did this I was getting warnings from the compiler about 
  * incompatible implicite delarations. The strlen function in stdlib.h 
@@ -43,10 +45,8 @@
 
 struct bsdl_node
 {
-	struct bsdl_node *next;
-	char *name;
-	char *value;
-	struct bsdl_node *sub;
+	unsigned int line_number;
+	char *value[];
 };
 
 
@@ -94,22 +94,28 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		location = 0;
+		#ifdef LIBBSDL_C_DEBUG
 		printf("\n");
 		printf("%s", line);
 		printf("\n");
+		#endif
 //		printf(" mode %c", *mode);
 //		printf("\n");
 		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
 		if ( ';' == mode )
 		{
 			mode = 'w';
+			#ifdef LIBBSDL_C_DEBUG
 			printf("\nNew Sublist\n");
+			#endif
 		}
 		count++;
 	}
+	#ifdef LIBBSDL_C_DEBUG
 	printf("\n");
 	printf("lines %d", count);
 	printf("\n\n");
+	#endif
 	free(line);
 	return;
 }
@@ -154,7 +160,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		//parentheses =+ libbsdl_parentheses_ballance(line, location, end);
 		if ( 0 == (*parentheses) )
 		{
+			#ifdef LIBBSDL_C_DEBUG
 			printf(" exiting port mode\n");
+			#endif
 			(*mode) = 'w';
 		}
 	}
@@ -164,13 +172,17 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 		{	
 			if ( 1 == libbsdl_offset_is_word(line, words[word_number], location))
 			{
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" found word %s", words[word_number]);
 				printf("\n");
+				#endif
 				location += strlen(words[word_number]);
 				if ( word_number == 0)
 				{	//to be enabled later
 					*mode = 'p';
+					#ifdef LIBBSDL_C_DEBUG
 					printf(" found a port changing modes \n");
+					#endif
 				} else 
 				if ( word_number == 6 && depth == 0 )
 				{
@@ -195,14 +207,16 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	// after i fix the code to write what it finds out this next line should be replaced with skipping the found texts length
 	strncpy(out, &(line[location]), (marker - location ));
 	out[( marker - location  )] = '\0';
+	#ifdef LIBBSDL_C_DEBUG
 	printf(" output : %s", out);
 	printf("\n");
+	#endif
 	location = marker;
 	depth++;
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
 }
 
-int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parentheses)
+int libbsdl_preprocessor_specialcharid(char line[], unsigned int location, char *mode, int *parentheses)
 {
 	int marker;
 	marker = location;
@@ -211,34 +225,46 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 		case '-':
 			if ( '-' == line[location + 1] )
 			{
+				#ifdef LIBBSDL_C_DEBUG
 				printf("\n");
 				printf(" comment detected\n");
+				#endif
 				marker = strlen(line);
 			} else
 			{
 				marker++;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" subtraction\n");
+				#endif
 			}
 			break;
 		case '+':
 			marker++;
+			#ifdef LIBBSDL_C_DEBUG
 			printf(" addition\n");
+			#endif
 			break;
 		case '"':
 			*mode = '"';
-			printf(" string open\n");
 			// look ahead for second quote mark and copy bulk then go to that location + 1
 			marker++;
 			marker = libbsdl_line_search_char(line, marker, '"');
+			#ifdef LIBBSDL_C_DEBUG
+			printf(" string open\n");
 			printf(" location %d", marker);
 			printf(" string closed\n");
+			#endif
 			marker++;
 			break;
 		case ';':
+			#ifdef LIBBSDL_C_DEBUG
 			printf(" ; (end of words)\n");
+			#endif
 			if ( 'p' == *mode && 0 != *parentheses )
 			{
+				#ifdef LIBBSDL_C_DEBUG
 				printf("need new vertical subnode\n");
+				#endif
 			} else
 			{
 				*mode = ';';
@@ -248,96 +274,129 @@ int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, in
 		case ':':
 			if ( '=' == line[location + 1] )
 			{
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" := (equivilence) \n");
+				#endif
 				marker += 2;
 			} else
 			{
 				marker++;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" : (assignment of)\n");
+				#endif
 			}
 			break;
 		case '=':
 			if ( '>' == line[location + 1] )
 			{
 				marker += 2;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" >= more than or equal too\n");
+				#endif
 			} else
 			if ( '<' == line[location + 1] )
 			{
 				marker += 2;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" <= less than or equal too\n");
+				#endif
 			} else
 			{
 				marker++;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" = equal too\n");
+				#endif
 			}
 			break;
 		case '(':
 			marker++;
 			(*parentheses)++;
+			#ifdef LIBBSDL_C_DEBUG
 			printf(" ( grouping started \n");
 			printf(" parentheses count %d", *parentheses);
 			printf("\n");
+			#endif
 			break;
 		case ')':
 			marker++;
 			(*parentheses)--;
+			#ifdef LIBBSDL_C_DEBUG
 			printf(" ) grouping ended \n");
 			printf(" parentheses count %d", *parentheses);
 			printf("\n");
+			#endif
 			break;
 		case ',':
 			marker++;
+			#ifdef LIBBSDL_C_DEBUG
 			printf(" , another value listed\n");
+			#endif
 			break;
 		case '\\':
 			if ( '=' == line[location + 1] )
 			{
 				marker += 2;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" \\= not equal too\n");
+				#endif
 			} else
 			{
 				marker++;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" \\ divided by\n");
+				#endif
 			}
 			break;
 		case '\'':
 			if ( '\\' == line[location + 1] && '\'' == line[location + 3] )
 			{
 				marker += 4;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" ascii character (special) found\n");
+				#endif
 			} else
 			if ( '\\' != line[location + 1] && '\'' == line[location + 2] )
 			{
 				marker += 3;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" ascii character value found\n");
+				#endif
 			} else
 			{
 				marker++;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" syntax error\n");
+				#endif
 			}
 			break;
 		case '*':
 			if ( '*' == line[location + 1])
 			{
 				marker += 2;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" ** exponentiation \n");
+				#endif
 			} else
 			{
 				marker++;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" * multiplication \n");
+				#endif
 			}
 			break;
 		case '&':
 			if ( '"' == *mode )
 			{
 				marker++;
-				printf(" more string left\n");
-			//hold depth
+				#ifdef LIBBSDL_C_DEBUG
+				printf(" more string left\nneed new vertical subnode \n");
+				#endif
 			} else
 			{
 				marker++;
+				#ifdef LIBBSDL_C_DEBUG
 				printf(" concatenation \n");
+				#endif
 			}
 			break;
 		default:
@@ -500,56 +559,6 @@ extern void libbsdl_initial_comments(FILE *file)
 	free(line);	
 	return;
 }
-
-/*
- * Because of the way we are just stepping down the lines of the file 
- * there is no need to impliment adding nodes in the middle of the list 
- * only on the end. That is what this function does.
- */
-struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last_node)
-{
-	struct bsdl_node *next_node;
-	next_node = malloc(sizeof(struct bsdl_node));
-	if (next_node == NULL)
-	{
-		exit(EXIT_FAILURE);
-	}
-	next_node->next = NULL;
-	if (last_node->next != NULL)
-	{
-		last_node->next = next_node;
-	}
-	return next_node;
-}
-/*
-struct bsdl_node *libbsdl_ll_new_subnode(struct bsdl_node *subhead)
-{
-	return;
-}
-
-struct bsdl_node *libbsdl_ll_previous_node(struct bsdl_node *node)
-{
-}
-
-struct bsdl_node *libbsdl_ll_previous_subnode(struct bsdl_node *node)
-{
-}
-
-void libbsdl_ll_del_subnode(struct bsdl_node *subnode)
-{
-	return;
-}
-
-void libbsdl_ll_del_list(struct bsdl_node *head)
-{
-	return;
-}
-
-void libbsdl_ll_del_sublist(struct bsdl_node *subhead)
-{
-	return;
-}
-*/
 
 #endif
 

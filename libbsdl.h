@@ -67,7 +67,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len);
 //void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node);
 int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth);
 
-int libbsdl_preprocessor_specialcharid(char line[], int location, char *mode, int *parenteses);
+int libbsdl_preprocessor_specialcharid(char line[], unsigned int location, char *mode, int *parenteses);
 
 int libbsdl_offset_is_word(char line[], char word[], unsigned int offset);
 
@@ -77,11 +77,5 @@ int libbsdl_is_whitespace(char line[], unsigned int number);
 int libbsdl_offset_is_word(char line[], char word[], unsigned int offset);
 int libbsdl_line_search_char(char line[], unsigned int offset, char looking_for);
 
-struct bsdl_node *libbsdl_ll_new_node(struct bsdl_node *last);
-/*
-struct bsdl_node *libbsdl_ll_new_subnode(struct bsdl_node *subhead);
-void libbsdl_ll_del_list(struct bsdl_node *head);
-void libbsdl_ll_del_sublist(struct bsdl_node *subhead);
-*/
 #endif
 
