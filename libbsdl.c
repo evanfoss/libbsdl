@@ -37,7 +37,7 @@
 #include "libbsdl.h"
 
 
-#define WORD_COUNT 15
+#define WORD_COUNT 31
 #define WORD_LENGTH_MAX 10
 
 // if the preprocessor is recursive but if it shall only be allowed 50 recursions (arbitrary but reasonable)
@@ -137,7 +137,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
 	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
-	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"port\0", "string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "type\0", "subtype\0", "package\0", "end\0"};
+	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"port\0", "string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "type\0", "subtype\0", "package\0", "sll\0", "srl\0", "sla\0", "sra\0", "rol\0", "ror\0", "and\0", "or\0", "nand\0", "nor\0", "xnor\0", "xor\0", "not\0", "abs\0", "mod\0", "rem\0", "end\0"};
 	unsigned int marker = 0;
 	// for testing purposes
 	char out[50];
@@ -250,6 +250,7 @@ int libbsdl_preprocessor_specialcharid(char line[], unsigned int location, char 
 			marker++;
 			marker = libbsdl_line_search_char(line, marker, '"');
 			#ifdef LIBBSDL_C_DEBUG
+			printf(" location %d", location);
 			printf(" string open\n");
 			printf(" location %d", marker);
 			printf(" string closed\n");
