@@ -43,13 +43,6 @@
 // if the preprocessor is recursive but if it shall only be allowed 50 recursions (arbitrary but reasonable)
 #define PREPROCESSOR_DEPTH 50
 
-struct bsdl_node
-{
-	unsigned int line_number;
-	char *value[];
-};
-
-
 /* 
  *
  */

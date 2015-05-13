@@ -23,7 +23,9 @@
 CC := gcc
 SRC_FILES = \
 	libbsdl.c \
-	libbsdl.h
+	libbsdl.h \
+	libbsdl-memory.c \
+	libbsdl-memory.h
 
 SRC_FILES_TEST = main.c 
 
@@ -38,7 +40,7 @@ libbsdl:
 test:
 	clear
 	echo 'testing lib bsdl'
-	$(CC) -Wall $(SRC_FILES_TEST) $(SRC_FILES) -o test.bin
+	$(CC) -Wall $(SRC_FILES_TEST) $(SRC_FILES) -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include/ -o test.bin  # $(pkg-config --cflags --libs glib-2.0) -o test.bin
 	./test.bin
 	rm test.bin
 
