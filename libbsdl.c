@@ -99,8 +99,6 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 		printf("%s", line);
 		printf("\n");
 		#endif
-//		printf(" mode %c", *mode);
-//		printf("\n");
 		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
 		if ( ';' == mode )
 		{
@@ -163,7 +161,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 			#ifdef LIBBSDL_C_DEBUG
 			printf(" exiting port mode\n");
 			#endif
-			(*mode) = 'w';
+			*mode = 'w';
 		}
 	}
 	if ( marker == location )
