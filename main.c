@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <glib.h>
 #include "libbsdl.h"
 
 int main(void)
@@ -34,6 +35,8 @@ int main(void)
 	// open an example file
 	FILE *bsdl_file;
 	char bsdl_file_name[] = "vaporware9000processor.bsdl";
+	GList* list = NULL;
+
 	bsdl_file = fopen(bsdl_file_name, "r");
 	if (bsdl_file == NULL)
 	{
@@ -50,5 +53,11 @@ int main(void)
 	libbsdl_preprocessor(bsdl_file);
 
 	fclose(bsdl_file);
+
+//temporary test of glib 
+	list = g_list_append(list, "Hello world!");
+	char* str = g_list_first(list)->data;
+	printf("The first item is '%s'\n", str);
+
 	exit(EXIT_SUCCESS);
 }
