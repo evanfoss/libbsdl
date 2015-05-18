@@ -38,15 +38,16 @@ struct bsdl_node
 	char *value[];
 };
 
-/*
+
 int libbsdl_init(void)
 {
-	GSList *list = NULL;
-	list = g_slist_prepend (list, "last");
-	list = g_slist_prepend (list, "first");
+	GList* list = NULL;
+	list = g_list_append(list, "Hello world!");
+	char* str = g_list_first(list)->data;
+	printf("The first item is '%s'\n", str);
 	return 0;
 }
-*/
+
 
 #endif
 

@@ -25,7 +25,7 @@
 #ifndef LIBBSDL_MEMORY_H_
 #define LIBBSDL_MEMORY_H_
 
-
+int libbsdl_init(void);
 
 #endif
 
