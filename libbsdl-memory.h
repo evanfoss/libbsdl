@@ -1,5 +1,5 @@
 /*
- * libbsdl.h
+ * libbsdl-memory.h
  * by Evan Foss
  * 2015.01.20
  *
@@ -25,7 +25,8 @@
 #ifndef LIBBSDL_MEMORY_H_
 #define LIBBSDL_MEMORY_H_
 
-int libbsdl_init(void);
+int libbsdl_open(void);
+int libbsdl_close(void);
 
 #endif
 

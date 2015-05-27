@@ -1,5 +1,5 @@
 /*
- * libbsdl.c
+ * libbsdl-memory.c
  * by Evan Foss
  * 2015.01.20
  *
@@ -32,22 +32,82 @@
 
 #include <glib.h>
 
-struct bsdl_node
+#define LIBBSDL_PACKAGENAME_LENGTH 32
+
+struct libbsdl_syntax
+{
+	unsigned int warnings_count;
+	unsigned int errors_count;
+	char *errors;
+	char *warnings;
+};
+
+struct libbsdl_cache
+{
+	unsigned int pin_count;
+	unsigned int ir_length;
+	unsigned int attribute_count;
+	char *attributes;
+};
+
+struct libbsdl_pins
+{
+	unsigned int number;
+	char name[];
+};
+
+struct libbsdl_port
+{
+	unsigned int pincount;
+	char name[LIBBSDL_PACKAGENAME_LENGTH];
+	struct libbsdl_pins pins[];
+};
+
+struct libbsdl_node
 {
 	unsigned int line_number;
-	char *value[];
+	char content[];
+};
+
+struct libbsdl_root
+{
+	struct libbsdl_syntax syntax; 
+	struct libbsdl_cache cache;
+	GList* preprocessed;
+	char file_name[32];
+	char entity_name[];
 };
 
 
-int libbsdl_init(void)
+/*
+ * the destroy of the h list is going to be done mostly via 
+ * https://developer.gnome.org/glib/stable/glib-Singly-Linked-Lists.html#g-slist-free-full
+ */
+
+/* 
+ *
+ */
+int libbsdl_open(void)
 {
+	struct libbsdl_node node1;
+	node1.line_number = 1;
 	GList* list = NULL;
-	list = g_list_append(list, "Hello world!");
-	char* str = g_list_first(list)->data;
-	printf("The first item is '%s'\n", str);
+	list = g_list_append(list, &node1);
+	node1.line_number = 2;
+	list = g_list_append(list, &node1);
+	struct bsdl_node *node_from_list = g_list_first(list)->data;
+	printf("%p", &node1);
+	printf("\n");
+	printf("%p", node_from_list);
+	printf("\n");
+	
 	return 0;
 }
 
+int libbsdl_close(void)
+{
+	return 0;
+}
 
 #endif
 
