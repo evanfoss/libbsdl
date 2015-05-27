@@ -75,7 +75,7 @@ struct libbsdl_root
 	struct libbsdl_cache cache;
 	GList* preprocessed;
 	char file_name[32];
-	char entity_name[];
+	char entity_name[32];
 };
 
 
