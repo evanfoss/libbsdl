@@ -32,7 +32,7 @@
 
 #include <glib.h>
 
-#define LIBBSDL_PACKAGENAME_LENGTH 32
+#define LIBBSDL_NAMELENGTH 32
 
 struct libbsdl_syntax
 {
@@ -47,7 +47,8 @@ struct libbsdl_cache
 	unsigned int pin_count;
 	unsigned int ir_length;
 	unsigned int attribute_count;
-	char *attributes;
+	char entity[LIBBSDL_NAMELENGTH];
+	char *attributes[];
 };
 
 struct libbsdl_pins
@@ -59,7 +60,7 @@ struct libbsdl_pins
 struct libbsdl_port
 {
 	unsigned int pincount;
-	char name[LIBBSDL_PACKAGENAME_LENGTH];
+	char name[LIBBSDL_NAMELENGTH];
 	struct libbsdl_pins pins[];
 };
 
@@ -74,8 +75,8 @@ struct libbsdl_root
 	struct libbsdl_syntax syntax; 
 	struct libbsdl_cache cache;
 	GList* preprocessed;
-	char file_name[32];
-	char entity_name[32];
+	char file_name[LIBBSDL_NAMELENGTH];
+	char entity_name[LIBBSDL_NAMELENGTH];
 };
 
 
@@ -93,12 +94,8 @@ int libbsdl_open(void)
 	node1.line_number = 1;
 	GList* list = NULL;
 	list = g_list_append(list, &node1);
-	node1.line_number = 2;
-	list = g_list_append(list, &node1);
 	struct bsdl_node *node_from_list = g_list_first(list)->data;
 	printf("%p", &node1);
-	printf("\n");
-	printf("%p", node_from_list);
 	printf("\n");
 	
 	return 0;
