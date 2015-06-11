@@ -21,12 +21,14 @@
  *
  */
 
+#include <glib.h>
+
 //I don't think I need these but it can't hurt to make the preprocessor earn it's keep
 #ifndef LIBBSDL_MEMORY_H_
 #define LIBBSDL_MEMORY_H_
 
-int libbsdl_open(void);
-int libbsdl_close(void);
+struct libbsdl_root *libbsdl_open(void);
+void libbsdl_close(struct libbsdl_root *root);
 
 #endif
 

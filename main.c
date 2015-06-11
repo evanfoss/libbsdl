@@ -54,8 +54,9 @@ int main(void)
 
 	fclose(bsdl_file);
 
-	libbsdl_open();
-	libbsdl_close();
+	struct libbsdl_root *bsdl;
+	bsdl = libbsdl_open();
+	libbsdl_close(bsdl);
 
 	exit(EXIT_SUCCESS);
 }

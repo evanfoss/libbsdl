@@ -25,6 +25,8 @@
 #ifndef LIBBSDL_MEMORY_C_
 #define LIBBSDL_MEMORY_C_
 
+#define LIBBSDL_MEMORY_C_DEBUG
+
 #include "libbsdl-memory.h"
 
 #include <stdio.h>
@@ -74,7 +76,7 @@ struct libbsdl_root
 {
 	struct libbsdl_syntax syntax; 
 	struct libbsdl_cache cache;
-	GList* preprocessed;
+	GList *preprocessed;
 	char file_name[LIBBSDL_NAMELENGTH];
 	char entity_name[LIBBSDL_NAMELENGTH];
 };
@@ -88,22 +90,31 @@ struct libbsdl_root
 /* 
  *
  */
-int libbsdl_open(void)
+struct libbsdl_root *libbsdl_open(void)
 {
-	struct libbsdl_node node1;
-	node1.line_number = 1;
-	GList* list = NULL;
-	list = g_list_append(list, &node1);
-	struct bsdl_node *node_from_list = g_list_first(list)->data;
-	printf("%p", &node1);
-	printf("\n");
-	
-	return 0;
+	struct libbsdl_root *root;
+	root = (struct libbsdl_root*) malloc(sizeof(struct libbsdl_root));
+	(*root).preprocessed = NULL;
+	#ifdef LIBBSDL_MEMORY_C_DEBUG
+	printf("libbsdl-memory: Root memory structure created.\n");
+	#endif
+
+	struct libbsdl_node *node1;
+	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
+
+	GList *sublist1 = NULL;
+	sublist1 = g_list_append(sublist1, node1);
+
+	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
+	return root;
 }
 
-int libbsdl_close(void)
+void libbsdl_close(struct libbsdl_root *root)
 {
-	return 0;
+	g_list_foreach((*root).preprocessed, (GFunc)g_free , NULL);
+	g_list_free((*root).preprocessed);
+	free(root);
+	return;
 }
 
 #endif
