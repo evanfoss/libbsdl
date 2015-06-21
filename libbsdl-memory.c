@@ -101,19 +101,50 @@ struct libbsdl_root *libbsdl_open(void)
 
 	struct libbsdl_node *node1;
 	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
-
+	printf("node 1%p", node1);
+	printf("\n");
 	GList *sublist1 = NULL;
 	sublist1 = g_list_append(sublist1, node1);
-
+	printf("sublist 1%p", sublist1);
+	printf("\n");
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
 	return root;
 }
 
+/*
+ * GFunc prototype looks like https://developer.gnome.org/glib/stable/glib-Doubly-Linked-Lists.html
+ * void functionname(gpointer data, gpointer user_data);
+ * I assume gpointer data is a pointer to the whole node as defined by glist.
+ * I also assume gpointer user_data is a pointer to my info stuffed inside that node.
+ *
+ * from the documentation
+ * data the element's data
+ * user_data user data passed to g_list_foreach() or g_slist_foreach()
+ *
+ * http://www.mega-nerd.com/erikd/Blog/CodeHacking/g_list_foreach.html
+ *
+ */
+
 void libbsdl_close(struct libbsdl_root *root)
 {
+	g_list_foreach((*root).preprocessed, (GFunc)libbsdl_closeh , NULL);
 	g_list_foreach((*root).preprocessed, (GFunc)g_free , NULL);
 	g_list_free((*root).preprocessed);
 	free(root);
+	return;
+}
+
+void libbsdl_closeh(gpointer data, gpointer user_data)
+{
+	//data is the pointer to the list
+//	g_list_foreach(data, (GFunc)libbsdl_nodeclose , NULL);
+	g_list_foreach(data, (GFunc)g_free , NULL);
+	return;
+}
+
+void libbsdl_nodeclose(gpointer data, gpointer user_data)
+{
+	free(data);
 	return;
 }
 
