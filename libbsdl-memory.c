@@ -95,10 +95,16 @@ struct libbsdl_root *libbsdl_open(void)
 	struct libbsdl_root *root;
 	root = (struct libbsdl_root*) malloc(sizeof(struct libbsdl_root));
 	(*root).preprocessed = NULL;
-	#ifdef LIBBSDL_MEMORY_C_DEBUG
-	printf("libbsdl-memory: Root memory structure created.\n");
-	#endif
+	return root;
+}
 
+
+#ifdef LIBBSDL_MEMORY_C_DEBUG
+void libbsdl_memtest(void)
+{
+	struct libbsdl_root *root;
+	root = libbsdl_open();
+	printf("libbsdl-memory: Root memory structure created.\n");
 	struct libbsdl_node *node1;
 	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
 	printf("node 1%p", node1);
@@ -108,8 +114,11 @@ struct libbsdl_root *libbsdl_open(void)
 	printf("sublist 1%p", sublist1);
 	printf("\n");
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
-	return root;
+	libbsdl_close(root);
+	return;
 }
+#endif
+
 
 /*
  * GFunc prototype looks like https://developer.gnome.org/glib/stable/glib-Doubly-Linked-Lists.html
@@ -128,7 +137,6 @@ struct libbsdl_root *libbsdl_open(void)
 void libbsdl_close(struct libbsdl_root *root)
 {
 	g_list_foreach((*root).preprocessed, (GFunc)libbsdl_closeh , NULL);
-	g_list_foreach((*root).preprocessed, (GFunc)g_free , NULL);
 	g_list_free((*root).preprocessed);
 	free(root);
 	return;
@@ -136,9 +144,8 @@ void libbsdl_close(struct libbsdl_root *root)
 
 void libbsdl_closeh(gpointer data, gpointer user_data)
 {
-	//data is the pointer to the list
-//	g_list_foreach(data, (GFunc)libbsdl_nodeclose , NULL);
 	g_list_foreach(data, (GFunc)g_free , NULL);
+	free(data);
 	return;
 }
 

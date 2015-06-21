@@ -31,7 +31,7 @@ struct libbsdl_root *libbsdl_open(void);
 void libbsdl_close(struct libbsdl_root *root);
 void libbsdl_closeh(gpointer data, gpointer user_data);
 void libbsdl_nodeclose(gpointer data, gpointer user_data);
-
+void libbsdl_memtest(void);
 
 #endif
 
