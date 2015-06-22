@@ -50,7 +50,6 @@ struct libbsdl_cache
 	unsigned int ir_length;
 	unsigned int attribute_count;
 	char entity[LIBBSDL_NAMELENGTH];
-	char *attributes[];
 };
 
 struct libbsdl_pins
@@ -95,6 +94,8 @@ struct libbsdl_root *libbsdl_open(void)
 	struct libbsdl_root *root;
 	root = (struct libbsdl_root*) malloc(sizeof(struct libbsdl_root));
 	(*root).preprocessed = NULL;
+	(*root).syntax.warnings = NULL;
+	(*root).syntax.errors = NULL;
 	return root;
 }
 
@@ -114,6 +115,13 @@ void libbsdl_memtest(void)
 	printf("sublist 1%p", sublist1);
 	printf("\n");
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
+
+	(*root).syntax.warnings = (char *) malloc(6 * sizeof(char));
+	//(*(*root).syntax.warnings) = "yes.\0";
+	//printf("%s", *(*root).syntax.warnings);
+	printf("\n");
+	free((*root).syntax.warnings);
+
 	libbsdl_close(root);
 	return;
 }
@@ -139,7 +147,9 @@ void libbsdl_close(struct libbsdl_root *root)
 	g_list_foreach((*root).preprocessed, (GFunc)libbsdl_closeh , NULL);
 	g_list_free((*root).preprocessed);
 	free(root);
-	return;
+/*	free((*root).syntax.warnings);
+ 	free((*root).syntax.errors);
+*/	return;
 }
 
 void libbsdl_closeh(gpointer data, gpointer user_data)
