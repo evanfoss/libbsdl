@@ -36,6 +36,9 @@
 
 #define LIBBSDL_NAMELENGTH 32
 
+/*
+ * This structure is for storing syntax issues found in processing the bsdl file.
+ */
 struct libbsdl_syntax
 {
 	unsigned int warnings_count;
@@ -44,6 +47,9 @@ struct libbsdl_syntax
 	char *warnings;
 };
 
+/*
+ * This structure is for storing the information already post processed from the bsdl file.
+ */
 struct libbsdl_cache
 {
 	unsigned int pin_count;
@@ -52,12 +58,18 @@ struct libbsdl_cache
 	char entity[LIBBSDL_NAMELENGTH];
 };
 
+/*
+ *
+ */
 struct libbsdl_pins
 {
 	unsigned int number;
 	char name[];
 };
 
+/* 
+ * 
+ */
 struct libbsdl_port
 {
 	unsigned int pincount;
@@ -65,12 +77,19 @@ struct libbsdl_port
 	struct libbsdl_pins pins[];
 };
 
+/* 
+ * This structure is one of the nodes in the linked list of preprocessed bsdl file text.
+ */
 struct libbsdl_node
 {
 	unsigned int line_number;
 	char content[];
 };
 
+/* 
+ * This structure is the top level one held by the program calling this library. 
+ * It is to be instantiated by a function in this library and destroyed by one.
+ */
 struct libbsdl_root
 {
 	struct libbsdl_syntax syntax; 
@@ -80,14 +99,8 @@ struct libbsdl_root
 	char entity_name[LIBBSDL_NAMELENGTH];
 };
 
-
-/*
- * the destroy of the h list is going to be done mostly via 
- * https://developer.gnome.org/glib/stable/glib-Singly-Linked-Lists.html#g-slist-free-full
- */
-
 /* 
- *
+ * This function instantiates the top level memory structure used by this library.
  */
 struct libbsdl_root *libbsdl_open(void)
 {
@@ -103,8 +116,10 @@ struct libbsdl_root *libbsdl_open(void)
 #ifdef LIBBSDL_MEMORY_C_DEBUG
 void libbsdl_memtest(void)
 {
+	// create a root structure to play with
 	struct libbsdl_root *root;
 	root = libbsdl_open();
+	// test the linked list handling
 	printf("libbsdl-memory: Root memory structure created.\n");
 	struct libbsdl_node *node1;
 	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
@@ -115,52 +130,47 @@ void libbsdl_memtest(void)
 	printf("sublist 1%p", sublist1);
 	printf("\n");
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
-
+	// test the handful of strings that are reached via pointer
+	printf("test the handling of syntax error and warning storage. (sub struct pointers)\n");
+	(*root).syntax.errors = (char *) malloc(6 * sizeof(char));
 	(*root).syntax.warnings = (char *) malloc(6 * sizeof(char));
 	//(*(*root).syntax.warnings) = "yes.\0";
 	//printf("%s", *(*root).syntax.warnings);
-	printf("\n");
-	free((*root).syntax.warnings);
-
+	printf("test done free up all our memory.\n");
+	// clean up behind ourselves
 	libbsdl_close(root);
 	return;
 }
 #endif
 
-
-/*
- * GFunc prototype looks like https://developer.gnome.org/glib/stable/glib-Doubly-Linked-Lists.html
- * void functionname(gpointer data, gpointer user_data);
- * I assume gpointer data is a pointer to the whole node as defined by glist.
- * I also assume gpointer user_data is a pointer to my info stuffed inside that node.
- *
- * from the documentation
- * data the element's data
- * user_data user data passed to g_list_foreach() or g_slist_foreach()
- *
- * http://www.mega-nerd.com/erikd/Blog/CodeHacking/g_list_foreach.html
- *
+/* 
+ * This function closes the data structure used by libbsdl freeing all it's used memory.
  */
-
 void libbsdl_close(struct libbsdl_root *root)
 {
+	// first we free each of the nodes in the horizontal lists
 	g_list_foreach((*root).preprocessed, (GFunc)libbsdl_closeh , NULL);
+	// then we free the vertical list
 	g_list_free((*root).preprocessed);
+	// then we free everything else in the root structure
+	free((*root).syntax.warnings);
+	free((*root).syntax.errors);
 	free(root);
-/*	free((*root).syntax.warnings);
- 	free((*root).syntax.errors);
-*/	return;
-}
-
-void libbsdl_closeh(gpointer data, gpointer user_data)
-{
-	g_list_foreach(data, (GFunc)g_free , NULL);
-	free(data);
 	return;
 }
 
-void libbsdl_nodeclose(gpointer data, gpointer user_data)
+/* 
+ * This function closes the linked list. 
+ * The prototype for this function is defined by glib.
+ * For more on that look at the following two links.
+ * glib refrence.
+ * https://developer.gnome.org/glib/stable/glib-Doubly-Linked-Lists.html
+ * 3rd party description.
+ * http://www.mega-nerd.com/erikd/Blog/CodeHacking/g_list_foreach.html
+ */
+void libbsdl_closeh(gpointer data, gpointer user_data)
 {
+	g_list_foreach(data, (GFunc)g_free , NULL);
 	free(data);
 	return;
 }
