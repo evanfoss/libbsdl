@@ -102,6 +102,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 		if (-1 != libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth))
 		{
 			printf("libbsdl: preprocessor: A fault has occured most likely in syntax of the bsdl file. Appologies.\n");
+			return;
 		}
 		count++;
 	}
