@@ -514,32 +514,5 @@ int libbsdl_line_search_char(char line[], unsigned int offset, char looking_for)
 	return -1;
 }
 
-extern void libbsdl_initial_comments(FILE *file)
-{
-
-	unsigned int location = 0;
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	while ((read = getline(&line, &len, file)) != -1)
-	{
-		// loop from 0 to the end of line minus the length of the string.
-		for (location = 0; location < read - 1; location++)
-		{
-			// if true then we found the comment
-			if ('-' == line[location] && '-' == line[location + 1])
-			{
-				printf("%s", line);
-			}
-			else if (' ' != line[location] )
-			{
-				location = read;
-			}
-		}
-	}
-	free(line);	
-	return;
-}
-
 #endif
 
