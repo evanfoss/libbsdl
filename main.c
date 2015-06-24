@@ -46,6 +46,11 @@ int main(void)
 	// grab some memory for the library to use
 	struct libbsdl_root *bsdl;
 	bsdl = libbsdl_open();
+	if (bsdl == NULL)
+	{
+		perror("out of memory!?\n");
+		exit(EXIT_FAILURE);
+	}
 
 	// preprocess the library
 	printf("*** test preprocessor ***\n");
