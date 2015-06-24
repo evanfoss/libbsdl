@@ -25,7 +25,7 @@
 #ifndef LIBBSDL_MEMORY_C_
 #define LIBBSDL_MEMORY_C_
 
-#define LIBBSDL_MEMORY_C_DEBUG
+//#define LIBBSDL_MEMORY_C_DEBUG
 
 #include "libbsdl-memory.h"
 

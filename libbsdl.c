@@ -25,7 +25,7 @@
 #ifndef LIBBSDL_C_
 #define LIBBSDL_C_
 
-//#define LIBBSDL_C_DEBUG
+#define LIBBSDL_C_DEBUG
 
 #include <stdio.h>
 /* When I first did this I was getting warnings from the compiler about 
