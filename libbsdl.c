@@ -58,7 +58,7 @@ extern void libbsdl_preprocessor(FILE *file, struct libbsdl_root *root)
 	// create head node
 	
 	// call recursive function
-	libbsdl_preprocessor_populate(file, &len);
+	libbsdl_preprocessor_populate(file, &len, root);
 	// is nead node address still a null pointer
 	// if yes then the file is empty it does not
 	// matter yes or know because we still return
@@ -70,7 +70,7 @@ extern void libbsdl_preprocessor(FILE *file, struct libbsdl_root *root)
 /*
  * 
  */
-void libbsdl_preprocessor_populate(FILE *file, size_t *len)
+void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root *root)
 {
 	unsigned int count = 0;
 	// the line we are on

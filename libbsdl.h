@@ -57,14 +57,9 @@
  *
  */
 
-// this should return a pointr to the initial comments in the bsdl file
-// technically like all comments they are optional but no file i have 
-// ever seen or heard of is with out them.
-extern void libbsdl_initial_comments(FILE *file);
-
 extern void libbsdl_preprocessor(FILE *file, struct libbsdl_root *root);
 // void libbsdl_preprocessor_findtype(char *line, );
-void libbsdl_preprocessor_populate(FILE *file, size_t *len);
+void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root *root);
 //void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node);
 int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth);
 
