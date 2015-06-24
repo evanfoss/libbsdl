@@ -110,12 +110,6 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 	free(line);
 	return;
 }
-/*
-void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node)
-{
-	return;
-}
-*/
 
 /* 
  * This function really does not read a whole line. What it does is recrusvily process a line one segment at a time. 
@@ -462,11 +456,6 @@ int libbsdl_end_of_word(char line[], int offset)
 	offset--;
 	return offset;
 }
-
-/*
-char libbsdl_offset_is_letter()
-
-*/
 
 /*
  * Skip white space. It pretty much is what it says.
