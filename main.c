@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
  */
 
 #include <sys/types.h>
@@ -36,7 +35,7 @@ int main(void)
 	// open an example file
 	FILE *bsdl_file;
 	char bsdl_file_name[] = "vaporware9000processor.bsdl";
-
+	printf("*** open the file ***\n");
 	bsdl_file = fopen(bsdl_file_name, "r");
 	if (bsdl_file == NULL)
 	{
@@ -44,18 +43,19 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-/*	puts("*** test initial comment function ***\n");
-	// this is not what the interface to the library will look
-	// like in the long run but i need to start somewhere
-	libbsdl_initial_comments(bsdl_file);
-*/
-	puts("*** test preprocessor ***\n");
-	libbsdl_preprocessor(bsdl_file);
-
-	fclose(bsdl_file);
-
+	// grab some memory for the library to use
 	struct libbsdl_root *bsdl;
 	bsdl = libbsdl_open();
+
+	// preprocess the library
+	printf("*** test preprocessor ***\n");
+	libbsdl_preprocessor(bsdl_file, bsdl);
+	fclose(bsdl_file);
+
+	// more tbd
+
+	// free the memeory the library to use
+	printf("*** now we just have to exit cleanly ***\n");
 	libbsdl_close(bsdl);
 
 	exit(EXIT_SUCCESS);

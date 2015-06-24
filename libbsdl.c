@@ -46,7 +46,7 @@
 /* 
  *
  */
-extern void libbsdl_preprocessor(FILE *file)
+extern void libbsdl_preprocessor(FILE *file, struct libbsdl_root *root)
 {
 
 	size_t len = 0;
@@ -99,11 +99,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len)
 		printf("%s", line);
 		printf("\n");
 		#endif
-		if (-1 != libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth))
-		{
-			printf("libbsdl: preprocessor: A fault has occured most likely in syntax of the bsdl file. Appologies.\n");
-			return;
-		}
+		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
 		count++;
 	}
 	#ifdef LIBBSDL_C_DEBUG

@@ -27,6 +27,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "libbsdl-memory.h"
 
 // the most pins I could find on a chip in digikey was a 40x40 grid
 #define PIN_NAME_LENGTH 6;
@@ -61,7 +62,7 @@
 // ever seen or heard of is with out them.
 extern void libbsdl_initial_comments(FILE *file);
 
-extern void libbsdl_preprocessor(FILE *file);
+extern void libbsdl_preprocessor(FILE *file, struct libbsdl_root *root);
 // void libbsdl_preprocessor_findtype(char *line, );
 void libbsdl_preprocessor_populate(FILE *file, size_t *len);
 //void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node);
