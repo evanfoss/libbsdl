@@ -54,7 +54,7 @@ int main(void)
 
 	// preprocess the library
 	printf("*** test preprocessor ***\n");
-	libbsdl_preprocessor(bsdl_file, bsdl);
+//	libbsdl_preprocessor(bsdl_file, bsdl);
 	fclose(bsdl_file);
 
 	// more tbd
@@ -62,6 +62,6 @@ int main(void)
 	// free the memeory the library to use
 	printf("*** now we just have to exit cleanly ***\n");
 	libbsdl_close(bsdl);
-
+	libbsdl_memtest();
 	exit(EXIT_SUCCESS);
 }

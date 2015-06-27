@@ -25,7 +25,7 @@
 #ifndef LIBBSDL_C_
 #define LIBBSDL_C_
 
-#define LIBBSDL_C_DEBUG
+//#define LIBBSDL_C_DEBUG
 
 #include <stdio.h>
 /* When I first did this I was getting warnings from the compiler about 
@@ -35,7 +35,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "libbsdl.h"
-
+#include "libbsdl-memory.h"
+#include "libbsdl-struct.h"
 
 #define WORD_COUNT 31
 #define WORD_LENGTH_MAX 10
@@ -83,6 +84,12 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 	unsigned int depth = 0;
 	char mode = ';';
 	int parentheses = 0;
+
+	struct libbsdl_node *node1;
+	node1 = (struct libbsdl_node *) malloc(sizeof(struct libbsdl_node));
+//	GList *sublist1 = NULL;
+//	sublist1 = g_list_append(sublist1, node1);
+
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
 	{
@@ -90,6 +97,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 		if ( ';' == mode )
 		{
 			mode = 'w';
+//			(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
 			#ifdef LIBBSDL_C_DEBUG
 			printf("\nNew Sublist\n");
 			#endif
