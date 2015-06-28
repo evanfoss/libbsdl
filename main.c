@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <glib.h>
 #include "libbsdl.h"
-#include "libbsdl-memory.h"
 
 int main(void)
 {

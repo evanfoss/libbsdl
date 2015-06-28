@@ -87,8 +87,8 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 
 	struct libbsdl_node *node1;
 	node1 = (struct libbsdl_node *) malloc(sizeof(struct libbsdl_node));
-//	GList *sublist1 = NULL;
-//	sublist1 = g_list_append(sublist1, node1);
+	GList *sublist1 = NULL;
+	sublist1 = g_list_append(sublist1, node1);
 
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
@@ -97,7 +97,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 		if ( ';' == mode )
 		{
 			mode = 'w';
-//			(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
+			(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
 			#ifdef LIBBSDL_C_DEBUG
 			printf("\nNew Sublist\n");
 			#endif
