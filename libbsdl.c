@@ -82,7 +82,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 	unsigned int location = 0;
 	// how many ( marks have we seen?
 	unsigned int depth = 0;
-	char mode = ';';
+	char mode = 'w';
 	int parentheses = 0;
 
 	struct libbsdl_node *node1;
@@ -94,6 +94,12 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 	while ((read = getline(&line, len, file)) != -1)
 	{
 		location = 0;
+		#ifdef LIBBSDL_C_DEBUG
+		printf("\n");
+		printf("%s", line);
+		printf("\n");
+		#endif
+		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
 		if ( ';' == mode )
 		{
 			mode = 'w';
@@ -102,12 +108,6 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 			printf("\nNew Sublist\n");
 			#endif
 		}
-		#ifdef LIBBSDL_C_DEBUG
-		printf("\n");
-		printf("%s", line);
-		printf("\n");
-		#endif
-		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
 		count++;
 	}
 	#ifdef LIBBSDL_C_DEBUG
