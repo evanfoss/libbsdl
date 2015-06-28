@@ -61,6 +61,6 @@ int main(void)
 	// free the memeory the library to use
 	printf("*** now we just have to exit cleanly ***\n");
 	libbsdl_close(bsdl);
-	libbsdl_memtest();
+//	libbsdl_memtest();
 	exit(EXIT_SUCCESS);
 }

@@ -59,10 +59,8 @@
  */
 
 extern void libbsdl_preprocessor(FILE *file, struct libbsdl_root *root);
-// void libbsdl_preprocessor_findtype(char *line, );
 void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root *root);
-//void libbsdl_preprocessor_getdata(char *line, struct bsdl_node *node);
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth);
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth, GList *list);
 
 int libbsdl_preprocessor_specialcharid(char line[], unsigned int location, char *mode, int *parenteses);
 

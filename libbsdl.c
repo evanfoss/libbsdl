@@ -85,10 +85,10 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 	char mode = 'w';
 	int parentheses = 0;
 
-	struct libbsdl_node *node1;
-	node1 = (struct libbsdl_node *) malloc(sizeof(struct libbsdl_node));
-	GList *sublist1 = NULL;
-	sublist1 = g_list_append(sublist1, node1);
+//	struct libbsdl_node *node1;
+//	node1 = (struct libbsdl_node *) malloc(sizeof(struct libbsdl_node));
+	GList *sublist = NULL;
+//	sublist1 = g_list_append(sublist1, node1);
 
 	// look at the file line by line
 	while ((read = getline(&line, len, file)) != -1)
@@ -99,11 +99,11 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 		printf("%s", line);
 		printf("\n");
 		#endif
-		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth);
+		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth, sublist);
 		if ( ';' == mode )
 		{
 			mode = 'w';
-			(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
+			(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
 			#ifdef LIBBSDL_C_DEBUG
 			printf("\nNew Sublist\n");
 			#endif
@@ -125,7 +125,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
  *
  *
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth) //, char *request_vnode)
+int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth, GList *list) //, char *request_vnode)
 {
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
@@ -182,7 +182,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 					*mode = ';';
 				}
 				depth++;
-				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
+				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 			}
 		}
 		// ok if we are down here it is not a symbol, comment or in the word list
@@ -206,7 +206,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	#endif
 	location = marker;
 	depth++;
-	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth);
+	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 }
 
 int libbsdl_preprocessor_specialcharid(char line[], unsigned int location, char *mode, int *parentheses)
