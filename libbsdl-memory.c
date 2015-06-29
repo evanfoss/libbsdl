@@ -66,6 +66,8 @@ void libbsdl_memtest(void)
 	printf("sublist 1%p", sublist1);
 	printf("\n");
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
+	// lets look at that
+	libbsdl_print(root);
 	// test the handful of strings that are reached via pointer
 	printf("test the handling of syntax error and warning storage. (sub struct pointers)\n");
 	(*root).syntax.errors = (char *) malloc(6 * sizeof(char));
@@ -84,6 +86,7 @@ void libbsdl_memtest(void)
  */
 void libbsdl_close(struct libbsdl_root *root)
 {
+	g_list_first((*root).preprocessed);
 	// first we free each of the nodes in the horizontal lists
 	g_list_foreach((*root).preprocessed, (GFunc)libbsdl_closeh , NULL);
 	// then we free the vertical list
@@ -106,8 +109,31 @@ void libbsdl_close(struct libbsdl_root *root)
  */
 void libbsdl_closeh(gpointer data, gpointer user_data)
 {
+	g_list_first(data);
 	g_list_foreach(data, (GFunc)g_free , NULL);
 	free(data);
+	return;
+}
+
+void libbsdl_print(struct libbsdl_root *root)
+{
+	printf("printing list\n");
+	g_list_first((*root).preprocessed);
+	g_list_foreach((*root).preprocessed, (GFunc)libbsdl_printh, NULL);
+	return;
+}
+
+void libbsdl_printh(gpointer data, gpointer user_data)
+{
+	printf("sublist\n");
+	g_list_first(data);
+	g_list_foreach(data, (GFunc)libbsdl_printnode, NULL);
+	return;
+}
+
+void libbsdl_printnode(gpointer data, gpointer user_data)
+{
+	printf("node \n");
 	return;
 }
 

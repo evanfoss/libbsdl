@@ -27,7 +27,8 @@ SRC_FILES = \
 	libbsdl-memory.c \
 	libbsdl-memory.h
 
-SRC_FILES_TEST = main.c 
+SRC_FILES_TEST_PRE = test-preprocessor.c
+SRC_FILES_TEST_MEM = test-memory.c
 
 all: libbsdl test
 
@@ -38,15 +39,18 @@ libbsdl:
 	$(CC) -g -shared  -Wl, -soname, libbsdl.so -o libbsdl.so libbsdl.o -lc
 
 test:
+#A total shakedown test should go here later.
+
+testpre:
 	clear
 	echo 'testing lib bsdl'
-	$(CC) -Wall $(SRC_FILES_TEST) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin 
+	$(CC) -Wall $(SRC_FILES_TEST_PRE) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin 
 	./test.bin
 	rm test.bin
 
 testmem:
 	clear
-	$(CC) -Wall $(SRC_FILES_TEST) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin
+	$(CC) -Wall $(SRC_FILES_TEST_MEM) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin
 	valgrind --leak-check=full --show-leak-kinds=all ./test.bin
 	rm test.bin
 

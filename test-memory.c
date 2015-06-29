@@ -1,7 +1,8 @@
 /*
- * libbsdl-memory.h
+ * main.c
+ * for testing libbsdl
  * by Evan Foss
- * 2015.01.20
+ * Date 2015.01.19
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,26 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * Copyright 2015.02.02 Evan Foss
- *
  */
 
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <glib.h>
+#include "libbsdl.h"
 
-//I don't think I need these but it can't hurt to make the preprocessor earn it's keep
-#ifndef LIBBSDL_MEMORY_H_
-#define LIBBSDL_MEMORY_H_
-
-struct libbsdl_root *libbsdl_open(void);
-void libbsdl_close(struct libbsdl_root *root);
-void libbsdl_closeh(gpointer data, gpointer user_data);
-void libbsdl_nodeclose(gpointer data, gpointer user_data);
-void libbsdl_memtest(void);
-
-void libbsdl_print(struct libbsdl_root *root);
-void libbsdl_printh(gpointer data, gpointer user_data);
-void libbsdl_printnode(gpointer data, gpointer user_data);
-
-#endif
-
+int main(void)
+{
+	libbsdl_memtest();
+	exit(EXIT_SUCCESS);
+}
