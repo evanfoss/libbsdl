@@ -59,11 +59,19 @@ void libbsdl_memtest(void)
 	printf("libbsdl-memory: Root memory structure created.\n");
 	struct libbsdl_node *node1;
 	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
-	printf("node 1%p", node1);
+	printf("\t\tnode 1%p", node1);
 	printf("\n");
 	GList *sublist1 = NULL;
 	sublist1 = g_list_append(sublist1, node1);
-	printf("sublist 1%p", sublist1);
+	printf("\tsublist 1%p", sublist1);
+	printf("\n");
+	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
+	//
+	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
+	printf("\t\tnode 1%p", node1);
+	printf("\n");
+//	sublist1 = g_list_append(sublist1, node1);
+	printf("\tsublist 1%p", sublist1);
 	printf("\n");
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
 	// lets look at that
@@ -125,7 +133,7 @@ void libbsdl_print(struct libbsdl_root *root)
 
 void libbsdl_printh(gpointer data, gpointer user_data)
 {
-	printf("sublist\n");
+	printf("\tsublist\n");
 	g_list_first(data);
 	g_list_foreach(data, (GFunc)libbsdl_printnode, NULL);
 	return;
@@ -133,7 +141,9 @@ void libbsdl_printh(gpointer data, gpointer user_data)
 
 void libbsdl_printnode(gpointer data, gpointer user_data)
 {
-	printf("node \n");
+	printf("\t\tnode\p", data);
+	printf("\n");
+	//printf("\t\tline_number%d", (*data).line_number);
 	return;
 }
 

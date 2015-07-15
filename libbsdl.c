@@ -104,6 +104,7 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 		{
 			mode = 'w';
 			(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
+			sublist = NULL;
 			#ifdef LIBBSDL_C_DEBUG
 			printf("\nNew Sublist\n");
 			#endif
@@ -134,6 +135,8 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	unsigned int marker = 0;
 	// for testing purposes
 	char out[50];
+	struct libbsdl_node *node;
+	node = NULL;
 	// fail if we exit after an arbitrarily excessive depth
 	if ( depth > PREPROCESSOR_DEPTH )
 	{
@@ -145,6 +148,7 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	{
 		return 0;
 	}
+
 	marker = location;
 	marker = libbsdl_preprocessor_specialcharid(line, location, mode, parentheses);
 	if ( 'p' == *mode )
@@ -182,6 +186,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 					*mode = ';';
 				}
 				depth++;
+				node = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
+				//(*node).line_number = line_number;
+				//(*node).content
+				list = g_list_append(list, node);
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 			}
 		}
@@ -206,6 +214,10 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	#endif
 	location = marker;
 	depth++;
+//	node = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
+//	(*node).line_number = line_number;
+	//(*node).content
+	list = g_list_append(list, node);
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 }
 

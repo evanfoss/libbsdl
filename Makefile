@@ -45,6 +45,7 @@ testpre:
 	clear
 	echo 'testing lib bsdl'
 	$(CC) -Wall $(SRC_FILES_TEST_PRE) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin 
+	#valgrind --leak-check=full --show-leak-kinds=all ./test.bin
 	./test.bin
 	rm test.bin
 
