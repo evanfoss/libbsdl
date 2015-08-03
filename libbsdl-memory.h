@@ -28,6 +28,8 @@
 #define LIBBSDL_MEMORY_H_
 
 struct libbsdl_root *libbsdl_open(void);
+struct libbsdl_node *libbsdl_catchnode(unsigned int line_number); //later i will add the code to get text
+void libbsdl_freenode(struct libbsdl_node *node);
 void libbsdl_close(struct libbsdl_root *root);
 void libbsdl_closeh(gpointer data, gpointer user_data);
 void libbsdl_nodeclose(gpointer data, gpointer user_data);

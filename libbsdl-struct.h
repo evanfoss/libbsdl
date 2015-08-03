@@ -84,7 +84,7 @@ struct libbsdl_port
 struct libbsdl_node
 {
 	unsigned int line_number;
-	char content[];
+	char content[3]; //fix me
 };
 
 /* 
@@ -96,8 +96,8 @@ struct libbsdl_root
 	struct libbsdl_syntax syntax; 
 	struct libbsdl_cache cache;
 	GList *preprocessed;
-	char file_name[LIBBSDL_NAMELENGTH];
-	char entity_name[LIBBSDL_NAMELENGTH];
+//	char file_name[LIBBSDL_NAMELENGTH];
+//	char entity_name[LIBBSDL_NAMELENGTH];
 };
 
 #endif

@@ -57,29 +57,44 @@ void libbsdl_memtest(void)
 	root = libbsdl_open();
 	// test the linked list handling
 	printf("libbsdl-memory: Root memory structure created.\n");
-	struct libbsdl_node *node1;
-	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
-	printf("\t\tnode 1%p", node1);
-	printf("\n");
-	GList *sublist1 = NULL;
-	sublist1 = g_list_append(sublist1, node1);
-	printf("\tsublist 1%p", sublist1);
-	printf("\n");
-	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
-	//
-	node1 = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
-	printf("\t\tnode 1%p", node1);
-	printf("\n");
-//	sublist1 = g_list_append(sublist1, node1);
-	printf("\tsublist 1%p", sublist1);
-	printf("\n");
-	(*root).preprocessed = g_list_append((*root).preprocessed, sublist1);
-	// lets look at that
+	struct libbsdl_node *node;
+	unsigned int line_number;
+	GList *sublist = NULL;
+	// node
+	line_number = 1;
+	node = libbsdl_catchnode(line_number);
+	sublist = g_list_append(sublist, node);
+	// node
+	line_number = 2;
+	node = libbsdl_catchnode(line_number);
+	sublist = g_list_append(sublist, node);
+	//to the vertical list
+	(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
+	sublist = NULL;
+	// node
+	line_number = 3;
+	node = libbsdl_catchnode(line_number);
+	sublist = g_list_append(sublist, node);
+	// node
+	line_number = 4;
+	node = libbsdl_catchnode(line_number);
+	sublist = g_list_append(sublist, node);
+	(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
+	sublist = NULL;
+	// node
+	line_number = 5;
+	node = libbsdl_catchnode(line_number);
+	sublist = g_list_append(sublist, node);
+	//to the vertical list
+	(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
+	sublist = NULL;
+
+
 	libbsdl_print(root);
 	// test the handful of strings that are reached via pointer
 	printf("test the handling of syntax error and warning storage. (sub struct pointers)\n");
-	(*root).syntax.errors = (char *) malloc(6 * sizeof(char));
-	(*root).syntax.warnings = (char *) malloc(6 * sizeof(char));
+//	(*root).syntax.errors = (char *) malloc(6 * sizeof(char));
+//	(*root).syntax.warnings = (char *) malloc(6 * sizeof(char));
 	//(*(*root).syntax.warnings) = "yes.\0";
 	//printf("%s", *(*root).syntax.warnings);
 	printf("test done free up all our memory.\n");
@@ -87,6 +102,17 @@ void libbsdl_memtest(void)
 	libbsdl_close(root);
 	return;
 }
+
+void libbsdl_memtestnode(void)
+{
+	struct libbsdl_node *node;
+	unsigned int line_number;
+	line_number = 1;
+	node = libbsdl_catchnode(line_number); //I will have to add code later for text
+	libbsdl_freenode(node);
+	return;
+}
+
 #endif
 
 /* 
@@ -123,9 +149,32 @@ void libbsdl_closeh(gpointer data, gpointer user_data)
 	return;
 }
 
+struct libbsdl_node *libbsdl_catchnode(unsigned int line_number) //later i will add the code to get text
+{
+	struct libbsdl_node *node;
+	node = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
+	if ( NULL == node )
+	{
+		exit(EXIT_FAILURE);
+	}
+	(*node).line_number = line_number;
+	//(*node).content
+	return node;
+}
+
+void libbsdl_freenode(struct libbsdl_node *node)
+{
+	free(node);
+	return;
+}
+
 void libbsdl_print(struct libbsdl_root *root)
 {
 	printf("printing list\n");
+	if ( (*root).preprocessed == NULL )
+	{
+		return;
+	}
 	g_list_first((*root).preprocessed);
 	g_list_foreach((*root).preprocessed, (GFunc)libbsdl_printh, NULL);
 	return;
@@ -133,7 +182,12 @@ void libbsdl_print(struct libbsdl_root *root)
 
 void libbsdl_printh(gpointer data, gpointer user_data)
 {
-	printf("\tsublist\n");
+	printf("\tsublist %p", data);
+	printf("\n");
+	if ( data == NULL )
+	{
+		return;
+	}
 	g_list_first(data);
 	g_list_foreach(data, (GFunc)libbsdl_printnode, NULL);
 	return;
@@ -141,8 +195,10 @@ void libbsdl_printh(gpointer data, gpointer user_data)
 
 void libbsdl_printnode(gpointer data, gpointer user_data)
 {
-	printf("\t\tnode\p", data);
+	printf("\t\tnode %p", data);
+	printf("\t %d", (*data).line_number);
 	printf("\n");
+	free(data);
 	//printf("\t\tline_number%d", (*data).line_number);
 	return;
 }
