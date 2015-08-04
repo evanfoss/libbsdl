@@ -143,11 +143,11 @@ void libbsdl_close(struct libbsdl_root *root)
  */
 void libbsdl_closeh(gpointer data, gpointer user_data)
 {
-	g_list_first(data);
+	g_list_free_full(data, g_free);
+/*	g_list_first(data);
 	g_list_foreach(data, (GFunc)g_free , NULL);
 	g_list_free(data);
-//	free(data);
-	return;
+*/	return;
 }
 
 struct libbsdl_node *libbsdl_catchnode(unsigned int line_number) //later i will add the code to get text
