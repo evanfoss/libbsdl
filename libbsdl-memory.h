@@ -37,7 +37,7 @@ void libbsdl_memtest(void);
 
 void libbsdl_print(struct libbsdl_root *root);
 void libbsdl_printh(gpointer data, gpointer user_data);
-void libbsdl_printnode(gpointer data, gpointer user_data);
+void libbsdl_printnode(struct libbsdl_node *data, gpointer user_data);
 
 #endif
 

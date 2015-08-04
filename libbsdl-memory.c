@@ -145,7 +145,8 @@ void libbsdl_closeh(gpointer data, gpointer user_data)
 {
 	g_list_first(data);
 	g_list_foreach(data, (GFunc)g_free , NULL);
-	free(data);
+	g_list_free(data);
+//	free(data);
 	return;
 }
 
@@ -193,12 +194,12 @@ void libbsdl_printh(gpointer data, gpointer user_data)
 	return;
 }
 
-void libbsdl_printnode(gpointer data, gpointer user_data)
+void libbsdl_printnode(struct libbsdl_node *data, gpointer user_data)
 {
 	printf("\t\tnode %p", data);
-	printf("\t %d", (*data).line_number);
+//	printf("\t %d", (*data).line_number);
 	printf("\n");
-	free(data);
+//	free(data);
 	//printf("\t\tline_number%d", (*data).line_number);
 	return;
 }
