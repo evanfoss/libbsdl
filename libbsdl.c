@@ -99,12 +99,13 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 		printf("%s", line);
 		printf("\n");
 		#endif
-		libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth, sublist);
+		sublist = libbsdl_line_preprocessor(read, line, count, location, &mode, &parentheses, depth, sublist);
 		if ( ';' == mode )
 		{
 			mode = 'w';
+			g_list_first(sublist);
 			(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
-			//sublist = NULL;
+			sublist = NULL;
 			#ifdef LIBBSDL_C_DEBUG
 			printf("\nNew Sublist\n");
 			#endif
@@ -125,26 +126,29 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
  * 
  *
  *
+ /list
  */
-int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth, GList *list) //, char *request_vnode)
+GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth, GList *list) //, char *request_vnode)
 {
 	// the number corsponding to the word we are looking for right now
 	unsigned int word_number = 0;
 	// the words we have to look for *NEVER CHANGE THE ORDER* only add onto the end of this list if you must
 	char words[WORD_COUNT][WORD_LENGTH_MAX] = {"port\0", "string\0", "of\0", "is\0", "signal\0", "vector\0", "entity\0", "generic\0", "constant\0", "use\0", "attribute\0", "type\0", "subtype\0", "package\0", "sll\0", "srl\0", "sla\0", "sra\0", "rol\0", "ror\0", "and\0", "or\0", "nand\0", "nor\0", "xnor\0", "xor\0", "not\0", "abs\0", "mod\0", "rem\0", "end\0"};
 	unsigned int marker = 0;
+	struct libbsdl_node *node;
 	// for testing purposes
 	char out[50];
 	// fail if we exit after an arbitrarily excessive depth
 	if ( depth > PREPROCESSOR_DEPTH )
 	{
-		return -1;
+		// i should really add an assertion here
+		return NULL;
 	}
 	location = libbsdl_end_of_whitespace(line, location);
 	// make sure we have not hit the end of the line (terminal case for recursion)
 	if ( line_length <= location )
 	{
-		return 0;
+		return list;
 	}
 
 	marker = location;
@@ -184,10 +188,8 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 					*mode = ';';
 				}
 				depth++;
-//				node = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
-				//(*node).line_number = line_number;
-				//(*node).content
-//				list = g_list_append(list, node);
+				node = libbsdl_catchnode(line_number);
+				list = g_list_append(list, node);
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 			}
 		}
@@ -212,14 +214,9 @@ int libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int lin
 	#endif
 	location = marker;
 	depth++;
-/*	node = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
-	(*node).line_number = line_number;
-	//(*node).content
-	if (node != NULL)
-	{
-		list = g_list_append(list, node);
-	}
-*/	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
+	node = libbsdl_catchnode(line_number);
+	list = g_list_append(list, node);
+	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 }
 
 int libbsdl_preprocessor_specialcharid(char line[], unsigned int location, char *mode, int *parentheses)

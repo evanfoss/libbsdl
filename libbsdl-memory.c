@@ -56,7 +56,7 @@ void libbsdl_memtest(void)
 	struct libbsdl_root *root;
 	root = libbsdl_open();
 	// test the linked list handling
-	printf("libbsdl-memory: Root memory structure created.\n");
+	printf("** libbsdl-memory: Root memory structure created.\n");
 	struct libbsdl_node *node;
 	unsigned int line_number;
 	GList *sublist = NULL;
@@ -88,16 +88,20 @@ void libbsdl_memtest(void)
 	//to the vertical list
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
 	sublist = NULL;
-
-
+	printf("\n** The following is a hardwired list of what should be printed out. **\n\n");
+	printf("+ sublist 1 content 2 nodes\n+ sublist 2 content 2 nodes\n+ sublist 3 content 1 nodes\n");
+	printf("\n");
 	libbsdl_print(root);
+	printf("\n**********************************************************************\n");
+	printf("\n");
 	// test the handful of strings that are reached via pointer
-	printf("test the handling of syntax error and warning storage. (sub struct pointers)\n");
+	printf("** test the handling of syntax error and warning storage. (sub struct pointers)\n");
 //	(*root).syntax.errors = (char *) malloc(6 * sizeof(char));
 //	(*root).syntax.warnings = (char *) malloc(6 * sizeof(char));
 	//(*(*root).syntax.warnings) = "yes.\0";
 	//printf("%s", *(*root).syntax.warnings);
-	printf("test done free up all our memory.\n");
+	printf("\n");
+	printf("** test done free up all our memory.\n");
 	// clean up behind ourselves
 	libbsdl_close(root);
 	return;
@@ -159,6 +163,9 @@ struct libbsdl_node *libbsdl_catchnode(unsigned int line_number) //later i will 
 		exit(EXIT_FAILURE);
 	}
 	(*node).line_number = line_number;
+//	(*node).content = "ab\0";
+	strcpy((*node).content, "ab\0");
+	printf("%s", (*node).content);
 	//(*node).content
 	return node;
 }
@@ -183,7 +190,7 @@ void libbsdl_print(struct libbsdl_root *root)
 
 void libbsdl_printh(gpointer data, gpointer user_data)
 {
-	printf("\tsublist %p", data);
+	printf("\tsublist head %p", data);
 	printf("\n");
 	if ( data == NULL )
 	{
@@ -197,6 +204,7 @@ void libbsdl_printh(gpointer data, gpointer user_data)
 void libbsdl_printnode(struct libbsdl_node *data, gpointer user_data)
 {
 	printf("\t\tnode %p", data);
+	printf("\t\tnode info %d", (*data).line_number);
 //	printf("\t %d", (*data).line_number);
 	printf("\n");
 //	free(data);
