@@ -188,7 +188,7 @@ GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int 
 					*mode = ';';
 				}
 				depth++;
-				node = libbsdl_catchnode(line_number);
+				node = libbsdl_catchnode(line_number, out);
 				list = g_list_append(list, node);
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 			}
@@ -214,7 +214,7 @@ GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int 
 	#endif
 	location = marker;
 	depth++;
-	node = libbsdl_catchnode(line_number);
+	node = libbsdl_catchnode(line_number, out);
 	list = g_list_append(list, node);
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 }

@@ -84,7 +84,7 @@ struct libbsdl_port
 struct libbsdl_node
 {
 	unsigned int line_number;
-	char content[3]; //fix me
+	char *content;
 };
 
 /* 

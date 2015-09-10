@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 #include <glib.h>
 
 /* 
@@ -62,28 +62,29 @@ void libbsdl_memtest(void)
 	GList *sublist = NULL;
 	// node
 	line_number = 1;
-	node = libbsdl_catchnode(line_number);
+	char text[5] = "1a2b\0";
+	node = libbsdl_catchnode(line_number, text);
 	sublist = g_list_append(sublist, node);
 	// node
 	line_number = 2;
-	node = libbsdl_catchnode(line_number);
+	node = libbsdl_catchnode(line_number, text);
 	sublist = g_list_append(sublist, node);
 	//to the vertical list
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
 	sublist = NULL;
 	// node
 	line_number = 3;
-	node = libbsdl_catchnode(line_number);
+	node = libbsdl_catchnode(line_number, text);
 	sublist = g_list_append(sublist, node);
 	// node
 	line_number = 4;
-	node = libbsdl_catchnode(line_number);
+	node = libbsdl_catchnode(line_number, text);
 	sublist = g_list_append(sublist, node);
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
 	sublist = NULL;
 	// node
 	line_number = 5;
-	node = libbsdl_catchnode(line_number);
+	node = libbsdl_catchnode(line_number, text);
 	sublist = g_list_append(sublist, node);
 	//to the vertical list
 	(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
@@ -111,8 +112,9 @@ void libbsdl_memtestnode(void)
 {
 	struct libbsdl_node *node;
 	unsigned int line_number;
+	char test[4] = "abc\0";
 	line_number = 1;
-	node = libbsdl_catchnode(line_number); //I will have to add code later for text
+	node = libbsdl_catchnode(line_number, test); //I will have to add code later for text
 	libbsdl_freenode(node);
 	return;
 }
@@ -147,14 +149,14 @@ void libbsdl_close(struct libbsdl_root *root)
  */
 void libbsdl_closeh(gpointer data, gpointer user_data)
 {
-	g_list_free_full(data, g_free);
-/*	g_list_first(data);
-	g_list_foreach(data, (GFunc)g_free , NULL);
+///	g_list_free_full(data, g_free);
+	g_list_first(data);
+	g_list_foreach(data, (GFunc)libbsdl_freenode , NULL);
 	g_list_free(data);
-*/	return;
+	return;
 }
 
-struct libbsdl_node *libbsdl_catchnode(unsigned int line_number) //later i will add the code to get text
+struct libbsdl_node *libbsdl_catchnode(unsigned int line_number, char text[]) //later i will add the code to get text
 {
 	struct libbsdl_node *node;
 	node = (struct libbsdl_node*) malloc(sizeof(struct libbsdl_node));
@@ -163,15 +165,16 @@ struct libbsdl_node *libbsdl_catchnode(unsigned int line_number) //later i will 
 		exit(EXIT_FAILURE);
 	}
 	(*node).line_number = line_number;
+	(*node).content = malloc(strlen(text) + 1);
 //	(*node).content = "ab\0";
-	strcpy((*node).content, "ab\0");
-	printf("%s", (*node).content);
+	strcpy((*node).content, text);
 	//(*node).content
 	return node;
 }
 
 void libbsdl_freenode(struct libbsdl_node *node)
 {
+	free(((*node).content));
 	free(node);
 	return;
 }
@@ -204,7 +207,8 @@ void libbsdl_printh(gpointer data, gpointer user_data)
 void libbsdl_printnode(struct libbsdl_node *data, gpointer user_data)
 {
 	printf("\t\tnode %p", data);
-	printf("\t\tnode info %d", (*data).line_number);
+	printf(" line_number %d", (*data).line_number);
+	printf(" content %s", (*data).content);
 //	printf("\t %d", (*data).line_number);
 	printf("\n");
 //	free(data);
