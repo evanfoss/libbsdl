@@ -103,8 +103,10 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
 		if ( ';' == mode )
 		{
 			mode = 'w';
+			#ifndef LIBBSDL_C_DEBUG
 			g_list_first(sublist);
 			(*root).preprocessed = g_list_append((*root).preprocessed, sublist);
+			#endif
 			sublist = NULL;
 			#ifdef LIBBSDL_C_DEBUG
 			printf("\nNew Sublist\n");
@@ -188,8 +190,10 @@ GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int 
 					*mode = ';';
 				}
 				depth++;
+				#ifndef LIBBSDL_C_DEBUG
 				node = libbsdl_catchnode(line_number, words[word_number]);
 				list = g_list_append(list, node);
+				#endif
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 			}
 		}
@@ -214,8 +218,10 @@ GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int 
 	#endif
 	location = marker;
 	depth++;
+	#ifndef LIBBSDL_C_DEBUG
 	node = libbsdl_catchnode(line_number, out);
 	list = g_list_append(list, node);
+	#endif
 	return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 }
 
