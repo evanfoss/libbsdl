@@ -188,7 +188,7 @@ GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int 
 					*mode = ';';
 				}
 				depth++;
-				node = libbsdl_catchnode(line_number, out);
+				node = libbsdl_catchnode(line_number, words[word_number]);
 				list = g_list_append(list, node);
 				return libbsdl_line_preprocessor(line_length, line, line_number, location, mode, parentheses, depth, list);
 			}
@@ -233,6 +233,10 @@ int libbsdl_preprocessor_specialcharid(char line[], unsigned int location, char 
 				printf(" comment detected\n");
 				#endif
 				marker = strlen(line);
+				if ('\n' == line[marker - 1])
+				{
+					marker--;
+				}
 			} else
 			{
 				marker++;
@@ -506,7 +510,7 @@ int libbsdl_is_whitespace(char line[], unsigned int number)
 	{
 		return 0;
 	}
-	if ( line[number] == ascii_space || line[number] == ascii_tab  || line[number] == ascii_newline || line[number] == ascii_terminate )
+	if ( line[number] == ascii_space || line[number] == ascii_tab  || line[number] == ascii_terminate || line[number] == ascii_newline )
 	{
 		return 1;
 	}
