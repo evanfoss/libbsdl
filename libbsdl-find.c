@@ -33,6 +33,8 @@
  * The idea is to have things like attributes counted so that I can build a cache of them.
  */
 
+ libbsdl_find_next_node(struct libbsdl_root *root, unsigned int max_depth, char *string_in, 
+
 
 #endif
 

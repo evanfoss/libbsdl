@@ -128,7 +128,6 @@ void libbsdl_preprocessor_populate(FILE *file, size_t *len, struct libbsdl_root 
  * 
  *
  *
- /list
  */
 GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int line_number, unsigned int location, char *mode, int *parentheses, unsigned int depth, GList *list) //, char *request_vnode)
 {
@@ -139,7 +138,7 @@ GList *libbsdl_line_preprocessor(ssize_t line_length, char line[], unsigned int 
 	unsigned int marker = 0;
 	struct libbsdl_node *node;
 	// for testing purposes
-	char out[50];
+	char out[line_length];
 	// fail if we exit after an arbitrarily excessive depth
 	if ( depth > PREPROCESSOR_DEPTH )
 	{
