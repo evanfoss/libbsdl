@@ -25,10 +25,11 @@ SRC_FILES = \
 	libbsdl.c \
 	libbsdl.h \
 	libbsdl-memory.c \
-	libbsdl-memory.h
+	libbsdl-memory.h \
 
 SRC_FILES_TEST_PRE = test-preprocessor.c
 SRC_FILES_TEST_MEM = test-memory.c
+SRC_FILES_TEST_FND = test-find.c
 
 all: libbsdl test
 
@@ -43,7 +44,6 @@ test:
 
 testpre:
 	clear
-	echo 'testing lib bsdl'
 	$(CC) -Wall $(SRC_FILES_TEST_PRE) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin 
 	#valgrind --leak-check=full --show-leak-kinds=all ./test.bin
 	./test.bin
@@ -53,6 +53,12 @@ testmem:
 	clear
 	$(CC) -Wall $(SRC_FILES_TEST_MEM) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin
 	valgrind --leak-check=full --show-leak-kinds=all ./test.bin
+	rm test.bin
+
+testfnd:
+	clear
+	$(CC) -Wall $(SRC_FILES_TEST_FND) $(SRC_FILES) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` -o test.bin
+	./test.bin
 	rm test.bin
 
 clean:

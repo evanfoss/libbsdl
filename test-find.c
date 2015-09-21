@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include "libbsdl.h"
-
+/*
 int main(void)
 {
 	// open an example file
@@ -66,3 +66,5 @@ int main(void)
 	libbsdl_close(bsdl);
 	exit(EXIT_SUCCESS);
 }
+
+*/
