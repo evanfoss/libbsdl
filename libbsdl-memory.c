@@ -56,7 +56,7 @@ void libbsdl_memtest(void)
 	struct libbsdl_root *root;
 	root = libbsdl_open();
 	// test the linked list handling
-/*	printf("** libbsdl-memory: Root memory structure created.\n");
+	printf("** libbsdl-memory: Root memory structure created.\n");
 	struct libbsdl_node *node;
 	unsigned int line_number;
 	GList *sublist = NULL;
@@ -104,7 +104,7 @@ void libbsdl_memtest(void)
 	printf("\n");
 	printf("** test done free up all our memory.\n");
 	// clean up behind ourselves
-*/	libbsdl_close(root);
+	libbsdl_close(root);
 	return;
 }
 

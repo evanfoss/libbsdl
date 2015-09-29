@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include "libbsdl.h"
-/*
+
 int main(void)
 {
 	// open an example file
@@ -59,7 +59,8 @@ int main(void)
 	libbsdl_print(bsdl);
 
 	//
-	
+	printf("*** now to find some text in the data\n");
+
 
 	// free the memeory the library to use
 	printf("*** now we just have to exit cleanly ***\n");
@@ -67,4 +68,3 @@ int main(void)
 	exit(EXIT_SUCCESS);
 }
 
-*/
