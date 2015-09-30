@@ -26,6 +26,8 @@ SRC_FILES = \
 	libbsdl.h \
 	libbsdl-memory.c \
 	libbsdl-memory.h \
+	libbsdl-find.c \
+	libbsdl-find.h
 
 SRC_FILES_TEST_PRE = test-preprocessor.c
 SRC_FILES_TEST_MEM = test-memory.c

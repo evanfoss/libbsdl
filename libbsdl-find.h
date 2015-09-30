@@ -28,5 +28,8 @@
 #define LIBBSDL_FIND_H_
 
 
+GList *libbsdl_find_next_node(struct libbsdl_root *root, unsigned int max_depth, char *string_in);
+
+
 #endif
 

@@ -59,7 +59,7 @@ int main(void)
 	libbsdl_print(bsdl);
 
 	//
-	printf("*** now to find some text in the data\n");
+	printf("*** now to find some text in the data***\n");
 
 
 	// free the memeory the library to use
