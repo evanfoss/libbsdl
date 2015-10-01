@@ -37,5 +37,46 @@ GList *libbsdl_find_next_node(struct libbsdl_root *root, unsigned int max_depth,
 	
 	return;
 }
+
+/*
+ * Walk the lists caching each sublist by it's content
+ */
+void libbsdl_find_cache_lists()
+{
+	return;
+}
+
+/*
+ * Find a sublist list by type.
+ */
+GList *libbsdl_find_listv()
+{
+	return;
+}
+
+/*
+ * Find a sublist by any arbitrary info
+ */
+GList *libbsdl_find_listv_arb()
+{
+	return;
+}
+
+/* 
+ * This function should walk the current sublist and find a given node.
+ */
+GList *libbsdl_find_node_h()
+{
+	return;
+}
+
+/* 
+ * This function should walk the current sublist skipping comments.
+ */
+GList *libbsdl_find_not_comment()
+{
+	return;
+}
+
 #endif
 
